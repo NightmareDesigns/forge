@@ -1244,10 +1244,8 @@ class CraftForgeApp {
         })
         .catch(err => this.updateStatus('Trace failed: ' + err.message));
     }
+  }
 }
-
-
-// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new CraftForgeApp();
 });
