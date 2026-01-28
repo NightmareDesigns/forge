@@ -51,4 +51,22 @@
     "node-fetch": "^3.3.0",
     "axios": "^1.6.0"
   }
+  ,
+  "build": {
+    "appId": "org.nightmaredesigns.forge",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": ["**/*"]
+      }
+    ]
+  }
 }

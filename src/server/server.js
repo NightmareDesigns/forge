@@ -15,6 +15,27 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 const BING_API_KEY = process.env.BING_API_KEY || '';
 const PORT = process.env.AI_SERVER_PORT || 4000;
 
+// If an Ollama runtime is bundled with the app (packaged into `bin/`), try to start it.
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
+
+try {
+  const bundledDir = path.join(__dirname, '..', 'bin');
+  const bundledExe = process.platform === 'win32' ? path.join(bundledDir, 'ollama.exe') : path.join(bundledDir, 'ollama');
+  if (fs.existsSync(bundledExe)) {
+    console.log('Found bundled Ollama at', bundledExe, '- attempting to start');
+    try {
+      const p = spawn(bundledExe, ['serve'], { detached: true, stdio: 'ignore' });
+      p.unref();
+      console.log('Started bundled Ollama (detached process)');
+    } catch (err) {
+      console.warn('Failed to start bundled Ollama:', err.message);
+    }
+  }
+} catch (e) {
+  // non-fatal
+}
 function escapeHtml(s) {
   return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
