@@ -70,6 +70,47 @@
       </div>
     </aside>
 
+    <!-- Slide-Out Tool Panel -->
+    <div id="tool-panel" class="tool-panel">
+      <div class="panel-header">
+        <h3>Drawing Tools</h3>
+        <button id="close-panel" class="close-btn">×</button>
+      </div>
+      <div class="panel-content">
+        <div class="tool-row">
+          <label>Brush Size</label>
+          <input type="range" id="brush-size" min="1" max="20" value="3">
+          <span id="brush-size-val">3</span>
+        </div>
+        <div class="tool-row">
+          <label>Brush Opacity</label>
+          <input type="range" id="brush-opacity" min="0.1" max="1" step="0.1" value="1">
+          <span id="brush-opacity-val">100%</span>
+        </div>
+        <div class="tool-row">
+          <label>Eraser Size</label>
+          <input type="range" id="eraser-size" min="5" max="50" value="10">
+          <span id="eraser-size-val">10</span>
+        </div>
+        <div class="tool-divider"></div>
+        <div class="tool-row">
+          <button class="tool-quick" data-tool="brush" style="background: #4a90e2">Brush (B)</button>
+        </div>
+        <div class="tool-row">
+          <button class="tool-quick" data-tool="marker" style="background: #f5a623">Marker (M)</button>
+        </div>
+        <div class="tool-row">
+          <button class="tool-quick" data-tool="eraser" style="background: #999">Eraser (E)</button>
+        </div>
+        <div class="tool-row">
+          <button class="tool-quick" data-tool="pen" style="background: #7ed321">Pen (P)</button>
+        </div>
+        <div class="tool-row">
+          <button class="tool-quick" data-tool="color-picker" style="background: #ff6b6b">Color Picker (X)</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Canvas Area -->
     <main id="canvas-container">
       <div id="rulers">

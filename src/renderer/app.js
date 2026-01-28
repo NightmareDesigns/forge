@@ -21,6 +21,18 @@ class CraftForgeApp {
     this.canvasHeight = 12;
     this.dpi = 72; // pixels per inch
     
+    // Drawing tools state
+    this.isDrawing = false;
+    this.startX = 0;
+    this.startY = 0;
+    this.brushSize = 3;
+    this.brushOpacity = 1;
+    this.eraserSize = 10;
+    this.strokes = [];
+    this.panX = 0;
+    this.panY = 0;
+    this.isPanning = false;
+    
     this.init();
   }
 
@@ -28,6 +40,7 @@ class CraftForgeApp {
     this.setupCanvas();
     this.setupEventListeners();
     this.setupToolbar();
+    this.setupToolPanel();
     this.setupMenuHandlers();
     this.setupDeviceHandlers();
     this.setupTraceHandlers();
@@ -89,6 +102,48 @@ class CraftForgeApp {
         this.updateStatus(`Tool: ${this.currentTool}`);
       });
     });
+  }
+
+  setupToolPanel() {
+    const panel = document.getElementById('tool-panel');
+    const closeBtn = document.getElementById('close-panel');
+    const brushSizeSlider = document.getElementById('brush-size');
+    const brushSizeVal = document.getElementById('brush-size-val');
+    const brushOpacitySlider = document.getElementById('brush-opacity');
+    const brushOpacityVal = document.getElementById('brush-opacity-val');
+    const eraserSizeSlider = document.getElementById('eraser-size');
+    const eraserSizeVal = document.getElementById('eraser-size-val');
+    const quickToolBtns = document.querySelectorAll('.tool-quick');
+
+    closeBtn?.addEventListener('click', () => this.toggleToolPanel());
+
+    brushSizeSlider?.addEventListener('input', (e) => {
+      this.brushSize = parseInt(e.target.value);
+      brushSizeVal.textContent = e.target.value;
+    });
+
+    brushOpacitySlider?.addEventListener('input', (e) => {
+      this.brushOpacity = parseFloat(e.target.value);
+      brushOpacityVal.textContent = Math.round(this.brushOpacity * 100) + '%';
+    });
+
+    eraserSizeSlider?.addEventListener('input', (e) => {
+      this.eraserSize = parseInt(e.target.value);
+      eraserSizeVal.textContent = e.target.value;
+    });
+
+    quickToolBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tool = btn.dataset.tool;
+        this.selectTool(tool);
+        this.updateStatus(`Tool: ${tool}`);
+      });
+    });
+  }
+
+  toggleToolPanel() {
+    const panel = document.getElementById('tool-panel');
+    panel?.classList.toggle('open');
   }
 
   setupMenuHandlers() {
@@ -239,6 +294,23 @@ class CraftForgeApp {
           }
         }
         break;
+      case 'stroke':
+        // Draw brush/marker/eraser strokes
+        this.ctx.globalAlpha = obj.opacity || 1;
+        this.ctx.strokeStyle = obj.tool === 'eraser' ? '#ffffff' : (obj.color || '#000000');
+        this.ctx.lineWidth = obj.strokeWidth;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        if (obj.points && obj.points.length > 0) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(obj.points[0].x, obj.points[0].y);
+          for (let i = 1; i < obj.points.length; i++) {
+            this.ctx.lineTo(obj.points[i].x, obj.points[i].y);
+          }
+          this.ctx.stroke();
+        }
+        this.ctx.globalAlpha = 1;
+        break;
     }
     
     this.ctx.restore();
@@ -278,19 +350,69 @@ class CraftForgeApp {
     const x = (e.clientX - rect.left) / this.zoom;
     const y = (e.clientY - rect.top) / this.zoom;
     
+    // Panning
+    if (this.isPanning && e.key !== ' ') {
+      this.isPanning = false;
+    }
+    if (e.button === 0 && this.isPanning) {
+      return; // Let drag pan
+    }
+
+    this.isDrawing = true;
+    this.startX = x;
+    this.startY = y;
+    
     if (this.currentTool === 'select') {
       this.handleSelection(x, y);
     } else if (this.currentTool === 'shapes') {
       this.startDrawingShape(x, y);
+    } else if (['brush', 'marker', 'eraser', 'pen'].includes(this.currentTool)) {
+      this.strokes.push({ tool: this.currentTool, points: [{ x, y }] });
+    } else if (this.currentTool === 'color-picker') {
+      this.handleColorPick(x, y);
     }
   }
 
   handleMouseMove(e) {
-    // Handle dragging, drawing, etc.
+    const rect = this.canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / this.zoom;
+    const y = (e.clientY - rect.top) / this.zoom;
+
+    if (this.isPanning && e.buttons & 1) {
+      this.panX += (x - this.startX) * this.zoom;
+      this.panY += (y - this.startY) * this.zoom;
+      this.startX = x;
+      this.startY = y;
+      this.render();
+      return;
+    }
+
+    if (this.isDrawing && this.strokes.length > 0) {
+      const currentStroke = this.strokes[this.strokes.length - 1];
+      currentStroke.points.push({ x, y });
+      this.render();
+    }
   }
 
   handleMouseUp(e) {
-    // Finish operations
+    this.isDrawing = false;
+    if (this.strokes.length > 0) {
+      const lastStroke = this.strokes[this.strokes.length - 1];
+      if (lastStroke.points.length > 1) {
+        this.saveState();
+        const obj = {
+          type: 'stroke',
+          tool: lastStroke.tool,
+          points: lastStroke.points,
+          strokeWidth: this.currentTool === 'eraser' ? this.eraserSize : this.brushSize,
+          opacity: this.currentTool === 'eraser' ? 1 : this.brushOpacity,
+          color: this.currentTool === 'marker' ? '#000000' : '#000000'
+        };
+        this.objects.push(obj);
+        this.render();
+      }
+      this.strokes = [];
+    }
   }
 
   handleWheel(e) {
@@ -309,6 +431,14 @@ class CraftForgeApp {
     if (e.key === 'p') this.selectTool('pen');
     if (e.key === 's' && !e.ctrlKey) this.selectTool('shapes');
     if (e.key === 't') this.selectTool('text');
+    if (e.key === 'e') this.selectTool('eraser');
+    if (e.key === 'b') this.selectTool('brush');
+    if (e.key === 'm') this.selectTool('marker');
+    if (e.key === 'x') this.selectTool('color-picker');
+    if (e.key === '+' || e.key === '=') { e.preventDefault(); this.zoomIn(); }
+    if (e.key === '-') { e.preventDefault(); this.zoomOut(); }
+    if (e.key === ' ') { e.preventDefault(); this.isPanning = true; }
+    if (e.shiftKey && e.key === 'T') this.toggleToolPanel();
   }
 
   // Tool operations
@@ -388,6 +518,25 @@ class CraftForgeApp {
     }
     
     this.render();
+  }
+
+  handleColorPick(x, y) {
+    // Find object at position and open color picker
+    for (let i = this.objects.length - 1; i >= 0; i--) {
+      const obj = this.objects[i];
+      if (obj.type === 'rect' || obj.type === 'ellipse') {
+        if (x >= obj.x && x <= obj.x + obj.width && y >= obj.y && y <= obj.y + obj.height) {
+          const color = prompt('Enter color (hex or name):', obj.fill || '#000000');
+          if (color) {
+            obj.fill = color;
+            this.render();
+            this.updateStatus(`Color changed to ${color}`);
+          }
+          return;
+        }
+      }
+    }
+    this.updateStatus('No shape selected. Click on a shape to pick color.');
   }
 
   // Zoom
