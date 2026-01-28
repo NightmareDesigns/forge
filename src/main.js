@@ -3,10 +3,12 @@ const path = require('path');
 const { createDeviceManager } = require('./devices');
 const Vectorizer = require('./utils/vectorize');
 const { validateFilePath, validateDeviceInfo, validateCutJob, validateTraceOptions, handleSecureError } = require('./security');
+const LicenseManager = require('./licensing');
 
 let mainWindow;
 let deviceManager;
 let vectorizer;
+let licenseManager;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -160,6 +162,23 @@ function showAbout() {
 
 // Initialize services
 app.whenReady().then(() => {
+  licenseManager = new LicenseManager();
+  
+  // Check license on startup
+  const licenseStatus = licenseManager.getStatus();
+  console.log('License Status:', licenseStatus);
+  
+  // If no license exists, start trial
+  if (!licenseManager.license) {
+    licenseManager.startTrial();
+    console.log('Trial started');
+  }
+  
+  // Check if locked (trial expired, not activated)
+  if (licenseManager.isLocked()) {
+    console.warn('Software is locked. Trial expired and not activated.');
+  }
+  
   deviceManager = createDeviceManager();
   vectorizer = new Vectorizer();
   
@@ -185,6 +204,12 @@ app.whenReady().then(() => {
   });
   
   createWindow();
+  
+  // Send license status to renderer
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('license-status', licenseManager.getStatus());
+  });
+  
   setupIPC();
 });
 
@@ -322,5 +347,28 @@ function setupIPC() {
       return result.filePaths[0];
     }
     return null;
+  });
+  
+  // Licensing IPC handlers
+  ipcMain.handle('get-license-status', () => {
+    return licenseManager.getStatus();
+  });
+  
+  ipcMain.handle('activate-license', async (event, keyString) => {
+    if (!keyString || typeof keyString !== 'string') {
+      return { success: false, error: 'Invalid key' };
+    }
+    const result = licenseManager.activateKey(keyString);
+    if (result.success) {
+      mainWindow.webContents.send('license-status', licenseManager.getStatus());
+    }
+    return result;
+  });
+  
+  ipcMain.handle('check-license-locked', () => {
+    return {
+      isLocked: licenseManager.isLocked(),
+      status: licenseManager.getStatus()
+    };
   });
 }

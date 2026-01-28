@@ -9,7 +9,9 @@
     "ai-server": "node src/server/server.js",
     "build": "electron-builder",
     "test": "jest",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "generate-keys": "node scripts/generate-keys.js",
+    "manage-keys": "node scripts/manage-keys.js"
   },
   "keywords": [
     "design",

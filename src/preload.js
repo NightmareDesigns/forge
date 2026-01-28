@@ -59,5 +59,12 @@ contextBridge.exposeInMainWorld('craftforge', {
   selectImageForTrace: () => ipcRenderer.invoke('select-image-for-trace'),
   traceImage: (imagePath, options) => ipcRenderer.invoke('trace-image', imagePath, options),
   posterizeImage: (imagePath, steps, options) => ipcRenderer.invoke('posterize-image', imagePath, steps, options),
-  preprocessImage: (imagePath, options) => ipcRenderer.invoke('preprocess-image', imagePath, options)
+  preprocessImage: (imagePath, options) => ipcRenderer.invoke('preprocess-image', imagePath, options),
+  
+  // Licensing operations
+  getLicenseStatus: () => ipcRenderer.invoke('get-license-status'),
+  activateLicense: (keyString) => ipcRenderer.invoke('activate-license', keyString),
+  checkLicenseLocked: () => ipcRenderer.invoke('check-license-locked'),
+  onLicenseStatus: (callback) => ipcRenderer.on('license-status', (event, status) => callback(status))
 });
+

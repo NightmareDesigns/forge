@@ -1,0 +1,400 @@
+<!-- Pricing Section for Nightmare Designs Forge Website -->
+
+<section id="pricing" class="pricing-section">
+  <div class="container">
+    <h2 class="section-title">Pricing</h2>
+    <p class="section-subtitle">Start free, unlock forever</p>
+
+    <div class="pricing-grid">
+      <!-- Trial Card -->
+      <div class="pricing-card trial">
+        <div class="card-header">
+          <h3 class="card-title">Trial</h3>
+          <p class="card-price">Free</p>
+          <p class="card-duration">30 days</p>
+        </div>
+        <div class="card-divider"></div>
+        <ul class="features-list">
+          <li>✅ Full access to all tools</li>
+          <li>✅ Unlimited designs</li>
+          <li>✅ All cutting machines supported</li>
+          <li>✅ AI design generation</li>
+          <li>✅ No credit card required</li>
+          <li>❌ Auto-unlock after trial</li>
+        </ul>
+        <button class="btn btn-primary btn-large" onclick="downloadApp()">Download & Try Free</button>
+        <p class="card-note">Trial expires after 30 days of first launch</p>
+      </div>
+
+      <!-- Professional Card -->
+      <div class="pricing-card professional featured">
+        <div class="featured-badge">BEST VALUE</div>
+        <div class="card-header">
+          <h3 class="card-title">Professional</h3>
+          <p class="card-price"><span class="currency">$</span>79<span class="decimal">.99</span></p>
+          <p class="card-duration">one-time purchase</p>
+        </div>
+        <div class="card-divider"></div>
+        <ul class="features-list">
+          <li>✅ All trial features</li>
+          <li>✅ Lifetime access</li>
+          <li>✅ No expiration date</li>
+          <li>✅ Free updates forever</li>
+          <li>✅ Priority support</li>
+          <li>✅ Future AI features included</li>
+        </ul>
+        <button class="btn btn-primary btn-large" onclick="openLicensePortal()">Buy License</button>
+        <p class="card-note">One-time payment. No subscription. Perpetual license.</p>
+      </div>
+
+      <!-- Enterprise Card -->
+      <div class="pricing-card enterprise">
+        <div class="card-header">
+          <h3 class="card-title">Enterprise</h3>
+          <p class="card-price">Custom</p>
+          <p class="card-duration">site licenses</p>
+        </div>
+        <div class="card-divider"></div>
+        <ul class="features-list">
+          <li>✅ Multiple user licenses</li>
+          <li>✅ Team collaboration</li>
+          <li>✅ Bulk discounts</li>
+          <li>✅ Priority support</li>
+          <li>✅ Custom integration</li>
+          <li>✅ Volume pricing</li>
+        </ul>
+        <button class="btn btn-outline btn-large" onclick="contactEnterprise()">Contact Sales</button>
+        <p class="card-note">For teams and businesses</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <h3 class="section-title">Frequently Asked Questions</h3>
+
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>🆓 Can I use the trial forever?</h4>
+          <p>The trial provides 30 days of full access. After that, you'll need a professional license to continue using CraftForge. No purchase necessary to try it.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>💳 What payment methods do you accept?</h4>
+          <p>We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and more through our secure payment processor.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🔑 How do license keys work?</h4>
+          <p>Each license key activates CraftForge on your machine. Keys are tied to your specific machine (MAC address + hostname) for security.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🖥️ Can I use one license on multiple machines?</h4>
+          <p>No, one license key = one machine. If you need multiple machines, purchase additional licenses. Contact sales for volume pricing.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>♻️ Is there a refund policy?</h4>
+          <p>We offer a 30-day money-back guarantee. If you're not satisfied, email support@nightmaredesigns.org for a full refund.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🚀 Do I get updates with my license?</h4>
+          <p>Yes! All updates are free forever. Your license never expires and includes all future features and improvements.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>💰 Is there a student or non-profit discount?</h4>
+          <p>Yes! Students and non-profits receive 50% off. Email support@nightmaredesigns.org with proof of status for a coupon.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🌐 Is internet required?</h4>
+          <p>No! CraftForge works completely offline. The trial and license validation happen locally on your machine.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Money Back Guarantee -->
+    <div class="guarantee-section">
+      <div class="guarantee-content">
+        <h3>🛡️ 30-Day Money-Back Guarantee</h3>
+        <p>Not satisfied with CraftForge? We'll refund your purchase within 30 days, no questions asked.</p>
+        <p>We're confident you'll love it. But if you don't, your money is safe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* Pricing Section Styles */
+.pricing-section {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--blood-dark) 100%);
+  border-top: 2px solid var(--blood);
+  border-bottom: 2px solid var(--blood);
+}
+
+.section-title {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--blood-light);
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+}
+
+.section-subtitle {
+  font-size: 1.2rem;
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 60px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Pricing Grid */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 40px;
+  margin-bottom: 80px;
+}
+
+/* Pricing Card */
+.pricing-card {
+  background: var(--bg-card);
+  border: 2px solid var(--blood);
+  border-radius: 12px;
+  padding: 40px 30px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(139, 0, 0, 0.3);
+  border-color: var(--blood-light);
+}
+
+.pricing-card.featured {
+  border: 3px solid var(--blood-glow);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.pricing-card.featured:hover {
+  transform: scale(1.05) translateY(-10px);
+}
+
+.featured-badge {
+  position: absolute;
+  top: -15px;
+  left: 20px;
+  background: var(--blood-glow);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--blood-light);
+}
+
+.card-price {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.currency {
+  font-size: 1.5rem;
+}
+
+.decimal {
+  font-size: 1.5rem;
+}
+
+.card-duration {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.card-divider {
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--blood), transparent);
+  margin: 30px 0;
+}
+
+.features-list {
+  list-style: none;
+  margin-bottom: 40px;
+}
+
+.features-list li {
+  padding: 10px 0;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.features-list li::before {
+  content: '• ';
+  color: var(--blood-light);
+  margin-right: 10px;
+}
+
+.card-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 20px;
+}
+
+.btn-large {
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: var(--blood);
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--blood-light);
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--blood-light);
+  border: 2px solid var(--blood);
+}
+
+.btn-outline:hover {
+  background: rgba(139, 0, 0, 0.1);
+  border-color: var(--blood-light);
+}
+
+/* FAQ Section */
+.faq-section {
+  margin-top: 80px;
+}
+
+.faq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.faq-item {
+  background: rgba(139, 0, 0, 0.1);
+  border-left: 4px solid var(--blood);
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+  background: rgba(139, 0, 0, 0.2);
+}
+
+.faq-item h4 {
+  color: var(--blood-light);
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.faq-item p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Guarantee Section */
+.guarantee-section {
+  margin-top: 80px;
+  background: rgba(139, 0, 0, 0.2);
+  border: 2px dashed var(--blood);
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+}
+
+.guarantee-content h3 {
+  font-size: 1.8rem;
+  color: var(--blood-light);
+  margin-bottom: 15px;
+}
+
+.guarantee-content p {
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pricing-section {
+    padding: 60px 20px;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .pricing-card.featured {
+    transform: scale(1);
+  }
+
+  .pricing-card.featured:hover {
+    transform: translateY(-10px);
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .card-price {
+    font-size: 2.5rem;
+  }
+}
+</style>
+
+<script>
+function downloadApp() {
+  window.location.href = 'https://github.com/NightmareDesigns/CraftForge/releases';
+}
+
+function openLicensePortal() {
+  // This would link to your license purchase portal
+  alert('🛒 License purchase portal coming soon!\n\nContact: support@nightmaredesigns.org');
+}
+
+function contactEnterprise() {
+  window.location.href = 'mailto:sales@nightmaredesigns.org?subject=Enterprise%20License%20Inquiry';
+}
+</script>
