@@ -1,0 +1,16 @@
+#!/bin/sh
+# Pre-commit hook: run npm audit to catch vulnerable dependencies before commit
+
+set -e
+
+echo "🔒 Checking for vulnerable dependencies..."
+npm audit --audit-level=moderate
+
+if [ $? -eq 0 ]; then
+  echo "✅ Audit passed. Proceeding with commit."
+  exit 0
+else
+  echo "❌ Audit found vulnerabilities. Commit blocked."
+  echo "Run 'npm audit' for details and 'npm audit fix' to resolve."
+  exit 1
+fi

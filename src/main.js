@@ -2,6 +2,7 @@ const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron');
 const path = require('path');
 const { createDeviceManager } = require('./devices');
 const Vectorizer = require('./utils/vectorize');
+const { validateFilePath, validateDeviceInfo, validateCutJob, validateTraceOptions, handleSecureError } = require('./security');
 
 let mainWindow;
 let deviceManager;
@@ -248,13 +249,22 @@ function setupIPC() {
   });
   
   ipcMain.handle('connect-device', async (event, deviceInfo, driverName) => {
-    const res = await deviceManager.connect(deviceInfo, driverName);
-    // Don't return driver objects or native handles over IPC — only serializable info
-    return { deviceId: res.deviceId, info: res.driver && res.driver.info ? res.driver.info : deviceInfo };
+    try {
+      const validated = validateDeviceInfo(deviceInfo);
+      const res = await deviceManager.connect(validated, driverName);
+      // Don't return driver objects or native handles over IPC — only serializable info
+      return { deviceId: res.deviceId, info: res.driver && res.driver.info ? res.driver.info : validated };
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'connect-device'));
+    }
   });
   
   ipcMain.handle('disconnect-device', async (event, deviceId) => {
-    await deviceManager.disconnect(deviceId);
+    try {
+      await deviceManager.disconnect(deviceId);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'disconnect-device'));
+    }
   });
   
   ipcMain.handle('get-device-status', () => {
@@ -262,20 +272,44 @@ function setupIPC() {
   });
   
   ipcMain.handle('send-cut-job', async (event, job) => {
-    return await deviceManager.sendCutJob(job);
+    try {
+      const validated = validateCutJob(job);
+      return await deviceManager.sendCutJob(validated);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'send-cut-job'));
+    }
   });
   
   // Vectorization IPC
   ipcMain.handle('trace-image', async (event, imagePath, options) => {
-    return await vectorizer.traceImage(imagePath, options);
+    try {
+      const validatedPath = validateFilePath(imagePath);
+      const validatedOptions = validateTraceOptions(options);
+      return await vectorizer.traceImage(validatedPath, validatedOptions);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'trace-image'));
+    }
   });
   
   ipcMain.handle('posterize-image', async (event, imagePath, steps, options) => {
-    return await vectorizer.posterizeTrace(imagePath, steps, options);
+    try {
+      const validatedPath = validateFilePath(imagePath);
+      const validatedOptions = validateTraceOptions(options);
+      const validatedSteps = Math.max(2, Math.min(8, parseInt(steps) || 3));
+      return await vectorizer.posterizeTrace(validatedPath, validatedSteps, validatedOptions);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'posterize-image'));
+    }
   });
   
   ipcMain.handle('preprocess-image', async (event, imagePath, options) => {
-    return await vectorizer.preprocessImage(imagePath, options);
+    try {
+      const validatedPath = validateFilePath(imagePath);
+      const validatedOptions = validateTraceOptions(options);
+      return await vectorizer.preprocessImage(validatedPath, validatedOptions);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'preprocess-image'));
+    }
   });
   
   ipcMain.handle('select-image-for-trace', async () => {
