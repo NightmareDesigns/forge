@@ -94,6 +94,10 @@ class CraftForgeApp {
   }
 
   setupToolbar() {
+    // Tool panel toggle
+    const togglePanelBtn = document.getElementById('toggle-panel');
+    togglePanelBtn?.addEventListener('click', () => this.toggleToolPanel());
+    
     document.querySelectorAll('.tool-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));

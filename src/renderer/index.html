@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:*; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:">
   <title>Nightmare Designs Forge</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="logo.css">
@@ -33,6 +33,11 @@
 
     <!-- Left Toolbar -->
     <aside id="toolbar">
+      <div class="tool-group">
+        <button class="tool-btn" id="toggle-panel" title="Drawing Tools & Options">
+          <span class="icon">🛠</span>
+        </button>
+      </div>
       <div class="tool-group">
         <button class="tool-btn active" data-tool="select" title="Select (V)">
           <span class="icon">⬚</span>
