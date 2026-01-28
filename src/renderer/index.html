@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>Nightmare Designs Forge</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="logo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Logo Header -->
+    <header id="app-header">
+      <div class="logo-container logo-compact">
+        <span class="nightmare-logo glow">Nightmare Designs Forge</span>
+        <div class="blood-drips">
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+          <div class="drip"></div>
+        </div>
+      </div>
+      <div class="header-spacer"></div>
+      <a href="https://nightmaredesigns.org" target="_blank" class="header-link">nightmaredesigns.org</a>
+    </header>
+
+    <!-- Left Toolbar -->
+    <aside id="toolbar">
+      <div class="tool-group">
+        <button class="tool-btn active" data-tool="select" title="Select (V)">
+          <span class="icon">⬚</span>
+        </button>
+        <button class="tool-btn" data-tool="pen" title="Pen Tool (P)">
+          <span class="icon">✒</span>
+        </button>
+        <button class="tool-btn" data-tool="shapes" title="Shapes (S)">
+          <span class="icon">◯</span>
+        </button>
+        <button class="tool-btn" data-tool="text" title="Text (T)">
+          <span class="icon">T</span>
+        </button>
+        <button class="tool-btn" data-tool="line" title="Line Tool (L)">
+          <span class="icon">╱</span>
+        </button>
+      </div>
+      
+      <div class="tool-group">
+        <button class="tool-btn" data-tool="image" title="Upload Image">
+          <span class="icon">🖼</span>
+        </button>
+        <button class="tool-btn" data-tool="trace" title="Image Trace">
+          <span class="icon">⊡</span>
+        </button>
+      </div>
+
+      <div class="tool-group">
+        <button class="tool-btn" data-tool="offset" title="Offset Path">
+          <span class="icon">⊞</span>
+        </button>
+        <button class="tool-btn" data-tool="contour" title="Contour">
+          <span class="icon">◎</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Canvas Area -->
+    <main id="canvas-container">
+      <div id="rulers">
+        <div id="ruler-horizontal"></div>
+        <div id="ruler-vertical"></div>
+      </div>
+      <div id="canvas-wrapper">
+        <canvas id="design-canvas"></canvas>
+      </div>
+      <div id="zoom-controls">
+        <button id="zoom-out">−</button>
+        <span id="zoom-level">100%</span>
+        <button id="zoom-in">+</button>
+      </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside id="properties-panel">
+      <div class="panel-section">
+        <h3>Layers</h3>
+        <div id="layers-list">
+          <div class="layer-item active">
+            <span class="layer-visibility">👁</span>
+            <span class="layer-name">Layer 1</span>
+            <span class="layer-lock">🔓</span>
+          </div>
+        </div>
+        <div class="layer-controls">
+          <button id="add-layer" title="Add Layer">+</button>
+          <button id="delete-layer" title="Delete Layer">−</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Transform</h3>
+        <div class="property-row">
+          <label>X:</label>
+          <input type="number" id="prop-x" value="0">
+          <label>Y:</label>
+          <input type="number" id="prop-y" value="0">
+        </div>
+        <div class="property-row">
+          <label>W:</label>
+          <input type="number" id="prop-width" value="0">
+          <label>H:</label>
+          <input type="number" id="prop-height" value="0">
+        </div>
+        <div class="property-row">
+          <label>Rotation:</label>
+          <input type="number" id="prop-rotation" value="0">
+          <span>°</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Fill & Stroke</h3>
+        <div class="property-row">
+          <label>Fill:</label>
+          <input type="color" id="prop-fill" value="#3498db">
+          <button id="no-fill">∅</button>
+        </div>
+        <div class="property-row">
+          <label>Stroke:</label>
+          <input type="color" id="prop-stroke" value="#000000">
+          <input type="number" id="stroke-width" value="1" min="0" step="0.5">
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Operations</h3>
+        <div class="operation-buttons">
+          <button class="op-btn" data-op="weld" title="Weld shapes together">Weld</button>
+          <button class="op-btn" data-op="slice" title="Slice shapes">Slice</button>
+          <button class="op-btn" data-op="attach" title="Attach shapes">Attach</button>
+          <button class="op-btn" data-op="flatten" title="Flatten to print">Flatten</button>
+          <button class="op-btn" data-op="contour" title="Add contour">Contour</button>
+          <button class="op-btn" data-op="offset" title="Offset path">Offset</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Cut Settings</h3>
+        <div class="property-row">
+          <label>Material:</label>
+          <select id="material-select">
+            <option value="vinyl">Vinyl</option>
+            <option value="cardstock">Cardstock</option>
+            <option value="cardstock-heavy">Heavy Cardstock</option>
+            <option value="paper">Paper</option>
+            <option value="iron-on">Iron-On</option>
+            <option value="fabric">Fabric</option>
+            <option value="faux-leather">Faux Leather</option>
+            <option value="sticker-paper">Sticker Paper</option>
+            <option value="vellum">Vellum</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="property-row">
+          <label>Pressure:</label>
+          <input type="range" id="cut-pressure" min="1" max="10" value="5">
+          <span id="pressure-value">5</span>
+        </div>
+        <div class="property-row">
+          <label>Speed:</label>
+          <input type="range" id="cut-speed" min="1" max="10" value="4">
+          <span id="speed-value">4</span>
+        </div>
+        <div class="property-row">
+          <label>Multi-Cut:</label>
+          <input type="number" id="multi-cut" min="1" max="5" value="1">
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3>Device</h3>
+        <div id="device-status" class="device-status disconnected">
+          <span class="status-indicator"></span>
+          <span id="device-name">No device connected</span>
+        </div>
+        <div class="device-controls">
+          <button id="scan-devices-btn" class="device-btn">Scan</button>
+          <button id="connect-device-btn" class="device-btn" disabled>Connect</button>
+        </div>
+        <select id="device-list" class="device-select" style="display: none;">
+          <option value="">Select a device...</option>
+        </select>
+        <button id="send-cut-btn" class="send-cut-btn" disabled>Send to Cutter</button>
+        <div id="cut-progress" class="cut-progress" style="display: none;">
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <span class="progress-text">0%</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Image Trace Dialog -->
+  <div id="trace-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Image Trace</h2>
+        <button class="modal-close" id="close-trace-dialog">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="trace-preview">
+          <div class="preview-original">
+            <h4>Original</h4>
+            <img id="trace-original" src="" alt="Original image">
+          </div>
+          <div class="preview-result">
+            <h4>Traced</h4>
+            <div id="trace-result"></div>
+          </div>
+        </div>
+        <div class="trace-options">
+          <div class="option-row">
+            <label>Mode:</label>
+            <select id="trace-mode">
+              <option value="simple">Simple (Black/White)</option>
+              <option value="posterize">Posterize (Multi-color)</option>
+            </select>
+          </div>
+          <div class="option-row">
+            <label>Threshold:</label>
+            <input type="range" id="trace-threshold" min="0" max="255" value="128">
+            <span id="threshold-value">128</span>
+          </div>
+          <div class="option-row" id="posterize-steps-row" style="display: none;">
+            <label>Color Steps:</label>
+            <input type="number" id="posterize-steps" min="2" max="8" value="4">
+          </div>
+          <div class="option-row">
+            <label>Detail:</label>
+            <select id="trace-detail">
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="option-row">
+            <label><input type="checkbox" id="trace-invert"> Invert</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="trace-preview-btn" class="btn">Preview</button>
+        <button id="trace-apply-btn" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Status Bar -->
+  <footer id="status-bar">
+    <span id="status-message">Ready</span>
+    <span id="canvas-size">12" × 12"</span>
+    <span id="selected-count">0 objects selected</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

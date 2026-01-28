@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nightmare Designs Forge - Design & Cutting Software</title>
+  <meta name="description" content="A powerful design and cutting software. Complete replacement for Cricut Design Space with more tools and options.">
+  <meta name="keywords" content="nightmare designs, forge, cricut, design space, cutting machine, vinyl cutter, svg, crafting">
+  <link rel="canonical" href="https://nightmaredesigns.org">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nightmare Designs Forge">
+  <meta property="og:description" content="A powerful design and cutting software. Forged in darkness, cut with precision.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://nightmaredesigns.org">
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blood-dark: #4a0000;
+      --blood: #8B0000;
+      --blood-light: #B22222;
+      --blood-glow: #ff0000;
+      --bg-dark: #0a0a0a;
+      --bg-card: #1a1a1a;
+      --text: #ffffff;
+      --text-muted: #888888;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Blood drip background effect */
+    .blood-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(to bottom, var(--blood-dark) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+
+    /* Logo */
+    .logo-container {
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-family: 'Creepster', cursive;
+      font-size: clamp(3rem, 10vw, 6rem);
+      color: var(--blood);
+      text-shadow: 
+        3px 3px 0 var(--blood-dark),
+        -1px -1px 0 var(--blood-glow),
+        0 0 30px rgba(139, 0, 0, 0.5);
+      letter-spacing: 4px;
+      animation: bloodPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes bloodPulse {
+      0%, 100% {
+        text-shadow: 
+          3px 3px 0 var(--blood-dark),
+          -1px -1px 0 var(--blood-glow),
+          0 0 30px rgba(139, 0, 0, 0.5);
+      }
+      50% {
+        text-shadow: 
+          3px 3px 0 var(--blood-dark),
+          -1px -1px 0 var(--blood-glow),
+          0 0 50px rgba(255, 0, 0, 0.8),
+          0 0 80px rgba(139, 0, 0, 0.6);
+      }
+    }
+
+    /* Blood Drips */
+    .drips {
+      position: absolute;
+      bottom: -50px;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .drip {
+      width: 8px;
+      background: linear-gradient(to bottom, var(--blood) 0%, var(--blood-light) 50%, var(--blood-dark) 100%);
+      border-radius: 0 0 50% 50%;
+      animation: dripping 2.5s ease-in infinite;
+    }
+
+    .drip:nth-child(1) { height: 30px; animation-delay: 0s; }
+    .drip:nth-child(2) { height: 45px; animation-delay: 0.4s; }
+    .drip:nth-child(3) { height: 25px; animation-delay: 0.8s; }
+    .drip:nth-child(4) { height: 55px; animation-delay: 0.2s; }
+    .drip:nth-child(5) { height: 35px; animation-delay: 1.2s; }
+    .drip:nth-child(6) { height: 50px; animation-delay: 0.6s; }
+    .drip:nth-child(7) { height: 28px; animation-delay: 1s; }
+
+    @keyframes dripping {
+      0% { transform: scaleY(0); opacity: 0; }
+      20% { transform: scaleY(1); opacity: 1; }
+      80% { transform: scaleY(1); opacity: 1; }
+      100% { transform: scaleY(1.2) translateY(20px); opacity: 0; }
+    }
+
+    .tagline {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .tagline strong {
+      color: var(--blood-light);
+    }
+
+    .description {
+      max-width: 600px;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+
+    /* Buttons */
+    .buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 16px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blood) 0%, var(--blood-dark) 100%);
+      color: white;
+      border: 2px solid var(--blood);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 40px rgba(139, 0, 0, 0.5);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--blood);
+      color: var(--blood-light);
+    }
+
+    /* Features Section */
+    .features {
+      padding: 100px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+      color: var(--blood-light);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--blood);
+      transform: translateY(-5px);
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    /* Download Section */
+    .download {
+      padding: 100px 20px;
+      text-align: center;
+      background: linear-gradient(to bottom, transparent, var(--blood-dark) 50%, transparent);
+    }
+
+    .download h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .download p {
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+    }
+
+    .platforms {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .platform-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 30px;
+      background: var(--bg-card);
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .platform-btn:hover {
+      border-color: var(--blood);
+      background: var(--blood-dark);
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 20px;
+      text-align: center;
+      border-top: 1px solid #222;
+    }
+
+    footer p {
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--blood-light);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.5rem;
+      }
+      
+      .buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="blood-bg"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="logo-container">
+      <h1 class="logo">Nightmare Designs Forge</h1>
+      <div class="drips">
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+        <div class="drip"></div>
+      </div>
+    </div>
+    
+    <p class="tagline"><strong>Forged in darkness.</strong> Cut with precision.</p>
+    
+    <p class="description">
+      A powerful design and cutting software — the complete replacement for Cricut Design Space. 
+      More tools. More options. Complete creative freedom. No subscriptions. No limitations.
+    </p>
+    
+    <div class="buttons">
+      <a href="#download" class="btn btn-primary">🩸 Download Free</a>
+      <a href="https://github.com/nightmaredesigns/forge" class="btn btn-secondary">View on GitHub</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>🔪 Features</h2>
+    
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">✂️</div>
+        <h3>Device Support</h3>
+        <p>Connect to Cricut machines, plotters, and vinyl cutters. HPGL protocol support for generic devices.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Image Tracing</h3>
+        <p>Convert any image to cut-ready vectors. Adjustable threshold, detail levels, and multi-color posterization.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Shape Library</h3>
+        <p>Stars, hearts, arrows, banners, speech bubbles, and more. Fully customizable parameters.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📝</div>
+        <h3>Text Tools</h3>
+        <p>Text on path, curved text, letter spacing, monograms. Convert text to outlines for cutting.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Boolean Operations</h3>
+        <p>Weld, slice, attach, flatten, contour, and offset. Professional path editing tools.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Export Options</h3>
+        <p>Export as SVG, PNG, or PDF. Import existing SVG files. Full project save/load support.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download" id="download">
+    <h2>⬇️ Download</h2>
+    <p>Available for Windows, macOS, and Linux. Always free. No account required.</p>
+    
+    <div class="platforms">
+      <a href="#" class="platform-btn">
+        <span>🪟</span>
+        <span>Windows</span>
+      </a>
+      <a href="#" class="platform-btn">
+        <span>🍎</span>
+        <span>macOS</span>
+      </a>
+      <a href="#" class="platform-btn">
+        <span>🐧</span>
+        <span>Linux</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      &copy; 2026 Nightmare Designs. 
+      <a href="https://github.com/nightmaredesigns/forge">GitHub</a> · 
+      <a href="/docs">Documentation</a>
+    </p>
+  </footer>
+</body>
+</html>
