@@ -59,8 +59,7 @@ class DeviceManager extends EventEmitter {
           productId: desc.idProduct,
           manufacturer: desc.iManufacturer,
           product: desc.iProduct,
-          type: 'usb',
-          device: device
+          type: 'usb'
         };
       });
     } catch (err) {

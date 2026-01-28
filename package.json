@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
+    "ai-server": "node src/server/server.js",
     "build": "electron-builder",
     "test": "jest",
     "lint": "eslint src/"

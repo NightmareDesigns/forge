@@ -248,7 +248,9 @@ function setupIPC() {
   });
   
   ipcMain.handle('connect-device', async (event, deviceInfo, driverName) => {
-    return await deviceManager.connect(deviceInfo, driverName);
+    const res = await deviceManager.connect(deviceInfo, driverName);
+    // Don't return driver objects or native handles over IPC — only serializable info
+    return { deviceId: res.deviceId, info: res.driver && res.driver.info ? res.driver.info : deviceInfo };
   });
   
   ipcMain.handle('disconnect-device', async (event, deviceId) => {

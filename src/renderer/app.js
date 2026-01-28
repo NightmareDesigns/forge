@@ -199,7 +199,45 @@ class CraftForgeApp {
         this.ctx.stroke();
         break;
       case 'path':
-        // SVG path rendering would go here
+        // Render traced SVG/path. Prefer rasterizing the SVG into an image
+        // (fast and preserves appearance). Cache the Image on the object.
+        if (obj.svg) {
+          try {
+            if (!obj._svgImage) {
+              const img = new Image();
+              img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(obj.svg);
+              obj._svgImage = img;
+              img.onload = () => this.render();
+            }
+
+            const img = obj._svgImage;
+            if (img.complete && img.naturalWidth !== 0) {
+              this.ctx.drawImage(img, obj.x, obj.y, obj.width, obj.height);
+            }
+          } catch (e) {
+            // If SVG cannot be rasterized, try Path2D fallback
+            if (obj.pathData) {
+              try {
+                const p = new Path2D(obj.pathData);
+                if (obj.fill && obj.fill !== 'transparent') {
+                  this.ctx.fill(p);
+                }
+                this.ctx.stroke(p);
+              } catch (err) {
+                // ignore draw errors
+              }
+            }
+          }
+        } else if (obj.pathData) {
+          // Fallback: draw Path2D from pathData
+          try {
+            const p = new Path2D(obj.pathData);
+            if (obj.fill && obj.fill !== 'transparent') this.ctx.fill(p);
+            this.ctx.stroke(p);
+          } catch (err) {
+            // no-op
+          }
+        }
         break;
     }
     
@@ -825,27 +863,56 @@ class CraftForgeApp {
   
   applyTrace() {
     if (!this.traceResult) return;
-    
-    // Add traced SVG as a path object
+
+    // Prepare SVG string and ensure it has explicit dimensions (helps Image rendering)
+    let svg = this.traceResult.svg || '';
+    // If SVG doesn't declare width/height but has viewBox, try to add width/height attributes
+    try {
+      const vbMatch = svg.match(/<svg[^>]*viewBox="([^"]+)"[^>]*>/i);
+      const hasWH = /<svg[^>]*(width|height)=/i.test(svg);
+      if (vbMatch && !hasWH) {
+        // Use viewBox width/height as default px size
+        const parts = vbMatch[1].split(/[,\s]+/).map(Number);
+        if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
+          svg = svg.replace(/<svg/i, `<svg width="${parts[2]}" height="${parts[3]}"`);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+
+    // Create image and wait for it to load before adding to objects to avoid flicker/disappearance
+    const img = new Image();
+    const imgLoad = new Promise((resolve) => {
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+    });
+    img.src = dataUrl;
+
+    const loaded = await imgLoad;
+
     const newObj = {
       type: 'path',
       x: 50,
       y: 50,
-      width: 200,
-      height: 200,
+      width: loaded && img.naturalWidth ? img.naturalWidth : 200,
+      height: loaded && img.naturalHeight ? img.naturalHeight : 200,
       pathData: this.traceResult.pathData,
-      svg: this.traceResult.svg,
+      svg: svg,
       fill: 'transparent',
       stroke: '#000000',
       strokeWidth: 1,
-      rotation: 0
+      rotation: 0,
+      _svgImage: loaded ? img : undefined
     };
-    
+
     this.saveState();
     this.objects.push(newObj);
     this.selectedObjects = [newObj];
     this.render();
-    
+
     // Close dialog
     document.getElementById('trace-dialog').style.display = 'none';
     this.updateStatus('Traced image added to canvas');

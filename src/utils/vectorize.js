@@ -32,21 +32,50 @@ class Vectorizer {
     const opts = { ...this.defaultOptions, ...options };
     
     return new Promise((resolve, reject) => {
-      potrace.trace(imagePath, opts, (err, svg) => {
+      potrace.trace(imagePath, opts, async (err, svg) => {
         if (err) {
           reject(err);
           return;
         }
-        
-        // Extract path data from SVG
-        const pathMatch = svg.match(/d="([^"]+)"/);
-        const pathData = pathMatch ? pathMatch[1] : '';
-        
-        resolve({
-          svg: svg,
-          pathData: pathData,
-          options: opts
-        });
+        // Ensure SVG has width/height attributes. If not, try to read source image dimensions.
+        try {
+          const hasWH = /<svg[^>]*(width|height)=/i.test(svg);
+          const viewBoxMatch = svg.match(/<svg[^>]*viewBox="([^"]+)"/i);
+          if (!hasWH) {
+            let w = 0, h = 0;
+            if (viewBoxMatch) {
+              const parts = viewBoxMatch[1].split(/[,\s]+/).map(Number);
+              if (parts.length === 4) { w = parts[2]; h = parts[3]; }
+            }
+            if (!w || !h) {
+              // Fallback to reading the raster image size
+              try {
+                const img = await Jimp.read(imagePath);
+                w = img.bitmap.width;
+                h = img.bitmap.height;
+              } catch (e) {
+                // ignore
+              }
+            }
+
+            if (w && h) {
+              svg = svg.replace(/<svg/i, `<svg width="${w}" height="${h}"`);
+            }
+          }
+        } catch (e) {
+          // ignore dimension fixes
+        }
+
+        // Extract all path 'd' attributes and join them so consumers have combined pathData
+        const dRegex = /d=\"([^\"]+)\"/g;
+        let m;
+        const parts = [];
+        while ((m = dRegex.exec(svg)) !== null) {
+          if (m[1]) parts.push(m[1]);
+        }
+        const pathData = parts.join(' ');
+
+        resolve({ svg: svg, pathData: pathData, options: opts });
       });
     });
   }
