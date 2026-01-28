@@ -1,0 +1,407 @@
+{
+  "plugins": [
+    {
+      "id": "plugin-1",
+      "name": "Quick Brush",
+      "description": "Fast brush with smoothing",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-brush.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-2",
+      "name": "Smart Eraser",
+      "description": "Context-aware eraser",
+      "gpu": false,
+      "icon": "assets/icons/tiny/icon-eraser.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-3",
+      "name": "Adaptive Zoom",
+      "description": "Smooth zooming tools",
+      "gpu": false,
+      "icon": "assets/icons/tiny/icon-zoom.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-4",
+      "name": "Vector Enhancer",
+      "description": "Post-trace vector cleanup",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-vectorize.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-5",
+      "name": "AI Sketch",
+      "description": "Generate sketches from prompts",
+      "gpu": true,
+      "preferredForAI": true,
+      "icon": "assets/icons/tiny/icon-ai.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-6",
+      "name": "Plugin Host",
+      "description": "Host for third-party plugins",
+      "gpu": false,
+      "icon": "assets/icons/tiny/icon-plugin.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-7",
+      "name": "GPU Accelerator",
+      "description": "Low-level GPU compute helpers",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-gpu.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-8",
+      "name": "Tool 8",
+      "description": "Additional drawing tool",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-9",
+      "name": "Tool 9",
+      "description": "Advanced path editor",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-10",
+      "name": "Tool 10",
+      "description": "Pattern generator",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-11",
+      "name": "Tool 11",
+      "description": "Noise-based texture brush",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-12",
+      "name": "Tool 12",
+      "description": "Stitch path generator",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-13",
+      "name": "Tool 13",
+      "description": "Vector blur",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-14",
+      "name": "Tool 14",
+      "description": "Gradient mesh",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-15",
+      "name": "Tool 15",
+      "description": "Bitmap-to-vector GPU trace",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-vectorize.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-16",
+      "name": "Tool 16",
+      "description": "Perspective transform",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-17",
+      "name": "Tool 17",
+      "description": "Path boolean optimiser",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-18",
+      "name": "Tool 18",
+      "description": "Fast raster brushes",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-brush.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-19",
+      "name": "Tool 19",
+      "description": "High-quality resizer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-20",
+      "name": "Tool 20",
+      "description": "Edge detection GPU",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-21",
+      "name": "Tool 21",
+      "description": "Color transfer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-22",
+      "name": "Tool 22",
+      "description": "Texture baker",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-23",
+      "name": "Tool 23",
+      "description": "Pattern tile generator",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-24",
+      "name": "Tool 24",
+      "description": "Curvature smoothing",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-25",
+      "name": "Tool 25",
+      "description": "Auto-layout for tiles",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-26",
+      "name": "Tool 26",
+      "description": "SVG optimizer",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-27",
+      "name": "Tool 27",
+      "description": "Real-time compositor",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-28",
+      "name": "Tool 28",
+      "description": "Mesh warp",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-29",
+      "name": "Tool 29",
+      "description": "Stroke stylizer",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-30",
+      "name": "Tool 30",
+      "description": "Advanced fill engine",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-31",
+      "name": "Tool 31",
+      "description": "Noise generator",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-32",
+      "name": "Tool 32",
+      "description": "Auto-trace quality boost",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-vectorize.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-33",
+      "name": "Tool 33",
+      "description": "Histogram equalizer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-34",
+      "name": "Tool 34",
+      "description": "High-speed renderer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-gpu.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-35",
+      "name": "Tool 35",
+      "description": "Smart fill",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-36",
+      "name": "Tool 36",
+      "description": "Vector to stitch path",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-37",
+      "name": "Tool 37",
+      "description": "Batch processor",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-38",
+      "name": "Tool 38",
+      "description": "Spline tools",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-39",
+      "name": "Tool 39",
+      "description": "Vector halftone generator",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-40",
+      "name": "Tool 40",
+      "description": "Color palette AI",
+      "gpu": true,
+      "preferredForAI": true,
+      "icon": "assets/icons/tiny/icon-ai.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-41",
+      "name": "Tool 41",
+      "description": "Gradient painter",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-42",
+      "name": "Tool 42",
+      "description": "Tile optimizer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-43",
+      "name": "Tool 43",
+      "description": "Auto-snap guides",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-44",
+      "name": "Tool 44",
+      "description": "Vector simplifier",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-45",
+      "name": "Tool 45",
+      "description": "Retouch brush",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-brush.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-46",
+      "name": "Tool 46",
+      "description": "Smart crop",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-47",
+      "name": "Tool 47",
+      "description": "Depth map from image",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-48",
+      "name": "Tool 48",
+      "description": "Auto-vector tiling",
+      "gpu": true,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-49",
+      "name": "Tool 49",
+      "description": "SVG layer compositor",
+      "gpu": false,
+      "icon": "assets/icons/tiny/placeholder.svg",
+      "enabled": false
+    },
+    {
+      "id": "plugin-50",
+      "name": "Tool 50",
+      "description": "High-quality GPU renderer",
+      "gpu": true,
+      "icon": "assets/icons/tiny/icon-gpu.svg",
+      "enabled": false
+    }
+  ],
+  "generated_count": 50
+}

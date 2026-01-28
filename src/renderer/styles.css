@@ -737,6 +737,37 @@ body {
   opacity: 0.8;
 }
 
+/* Right slide-out drawer */
+.right-drawer {
+  position: fixed;
+  right: -380px;
+  top: 50px;
+  width: 360px;
+  height: calc(100vh - 50px);
+  background: var(--bg-medium);
+  border-left: 2px solid var(--border);
+  box-shadow: -2px 0 8px rgba(0,0,0,0.5);
+  z-index: 1200;
+  transition: right 0.28s ease;
+  overflow-y: auto;
+}
+
+.right-drawer.open {
+  right: 0;
+}
+
+.right-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.right-drawer-content {
+  padding: 12px 16px;
+}
+
 /* Panel Sections */
 .panel-section {
   padding: 10px 0;

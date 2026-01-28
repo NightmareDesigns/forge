@@ -28,6 +28,7 @@
         </div>
       </div>
       <div class="header-spacer"></div>
+      <button id="toggle-right-panel" class="tool-btn" title="Properties" style="margin-right:8px">☰</button>
       <a href="https://nightmaredesigns.org" target="_blank" class="header-link">nightmaredesigns.org</a>
     </header>
 
@@ -286,6 +287,15 @@
         </div>
       </div>
     </aside>
+
+    <!-- Right Slide-Out Drawer (clones properties when opened) -->
+    <div id="right-drawer" class="right-drawer" aria-hidden="true">
+      <div class="right-drawer-header">
+        <h3>Properties</h3>
+        <button id="close-right-drawer" class="close-btn">×</button>
+      </div>
+      <div id="right-drawer-content" class="right-drawer-content"></div>
+    </div>
   </div>
 
   <!-- Image Trace Dialog -->

@@ -97,6 +97,9 @@ class CraftForgeApp {
     // Tool panel toggle
     const togglePanelBtn = document.getElementById('toggle-panel');
     togglePanelBtn?.addEventListener('click', () => this.toggleToolPanel());
+    // Right properties drawer toggle
+    const toggleRightBtn = document.getElementById('toggle-right-panel');
+    toggleRightBtn?.addEventListener('click', () => this.toggleRightPanel());
     
     document.querySelectorAll('.tool-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -205,6 +208,31 @@ class CraftForgeApp {
   toggleToolPanel() {
     const panel = document.getElementById('tool-panel');
     panel?.classList.toggle('open');
+  }
+
+  toggleRightPanel() {
+    const drawer = document.getElementById('right-drawer');
+    const props = document.getElementById('properties-panel');
+    const container = document.getElementById('right-drawer-content');
+
+    if (!drawer || !props || !container) return;
+
+    const isOpen = drawer.classList.contains('open');
+    if (isOpen) {
+      // close: clear cloned content
+      drawer.classList.remove('open');
+      container.innerHTML = '';
+      drawer.setAttribute('aria-hidden', 'true');
+    } else {
+      // open: clone properties-panel into drawer content so layout stays stable
+      container.innerHTML = props.innerHTML;
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+
+      // attach close handler for elements inside cloned content
+      const closeBtn = document.getElementById('close-right-drawer');
+      closeBtn?.addEventListener('click', () => this.toggleRightPanel());
+    }
   }
 
   setupMenuHandlers() {
