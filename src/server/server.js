@@ -32,38 +32,52 @@ app.post('/generate', async (req, res) => {
     const systemPrompt = `You are a helpful SVG design generator. Generate compact SVG markup only. Do NOT include any markdown, explanations, or code blocks. Return only the raw SVG code.`;
     const userPrompt = `Generate an SVG design for: ${prompt}\n\nReturn ONLY the SVG markup, nothing else.`;
 
-    const response = await axios.post(`${OLLAMA_HOST}/api/generate`, {
-      model: MODEL,
-      prompt: `${systemPrompt}\n\n${userPrompt}`,
-      stream: false,
-      temperature: 0.7
-    });
+    try {
+      const response = await axios.post(`${OLLAMA_HOST}/api/generate`, {
+        model: MODEL,
+        prompt: `${systemPrompt}\n\n${userPrompt}`,
+        stream: false,
+        temperature: 0.7
+      });
 
-    let output = response.data.response || '';
-    
-    // Clean up the response - remove markdown code blocks if present
-    output = output.replace(/```svg\n?/g, '').replace(/```\n?/g, '').trim();
-    
-    // If we got an SVG, wrap it properly
-    if (!output.startsWith('<svg')) {
-      // Try to extract SVG from the output
-      const svgMatch = output.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
-      if (svgMatch) {
-        output = svgMatch[0];
-      } else {
-        // Create a simple SVG fallback
-        output = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
-          <rect width="400" height="400" fill="#f0f0f0"/>
-          <text x="200" y="200" text-anchor="middle" dy=".3em" font-size="16" fill="#666">
-            AI: ${escapeHtml(prompt.substring(0, 50))}
-          </text>
-        </svg>`;
+      let output = response.data.response || '';
+      output = output.replace(/```svg\n?/g, '').replace(/```\n?/g, '').trim();
+      if (!output.startsWith('<svg')) {
+        const svgMatch = output.match(/<svg[^>]*>[\s\S]*<\/svg>/i);
+        if (svgMatch) {
+          output = svgMatch[0];
+        } else {
+          throw new Error('No SVG generated');
+        }
       }
+      res.json({ svg: output, prompt: prompt });
+    } catch (ollama_err) {
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#6C5CE7', '#00B894'];
+      const shapes = ['circle', 'rect', 'polygon'];
+      const randColor = colors[Math.floor(Math.random() * colors.length)];
+      const randShape = shapes[Math.floor(Math.random() * shapes.length)];
+      let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+        <rect width="400" height="400" fill="#f9f9f9"/>`;
+      if (randShape === 'circle') {
+        svg += `<circle cx="200" cy="200" r="120" fill="${randColor}" opacity="0.8"/>
+                <circle cx="150" cy="150" r="60" fill="${randColor}" opacity="0.6"/>
+                <circle cx="250" cy="250" r="60" fill="${randColor}" opacity="0.6"/>`;
+      } else if (randShape === 'rect') {
+        svg += `<rect x="100" y="100" width="200" height="200" fill="${randColor}" opacity="0.8" rx="20"/>
+                <rect x="150" y="150" width="100" height="100" fill="white" opacity="0.8" rx="10"/>`;
+      } else if (randShape === 'polygon') {
+        svg += `<polygon points="200,50 350,350 50,350" fill="${randColor}" opacity="0.8"/>
+                <polygon points="200,100 320,320 80,320" fill="white" opacity="0.6"/>`;
+      }
+      svg += `<text x="200" y="375" text-anchor="middle" font-size="14" fill="#666" font-family="Arial">
+              ${escapeHtml(prompt.substring(0, 40))}
+            </text>
+          </svg>`;
+      res.json({ svg: svg, prompt: prompt, note: 'Using fallback - install Ollama for full AI' });
     }
-
-    res.json({ svg: output, prompt: prompt });
-  } catch (error) {
-    res.status(500).json({ error: 'Generation failed', detail: error.message, note: 'Make sure Ollama is running (visit ollama.ai to install)' });
+  }
+  catch (error) {
+    res.status(500).json({ error: 'Generation failed', detail: error.message });
   }
 });
 
