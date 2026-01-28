@@ -119,7 +119,64 @@ class CraftForgeApp {
     const eraserSizeVal = document.getElementById('eraser-size-val');
     const quickToolBtns = document.querySelectorAll('.tool-quick');
 
+    // Image import
+    const importBtn = document.getElementById('import-image-btn');
+    const imageInput = document.getElementById('image-input');
+    const traceBtn = document.getElementById('trace-image-btn');
+    
+    // AI features
+    const searchBtn = document.getElementById('ai-search-btn');
+    const searchInput = document.getElementById('ai-search-input');
+    const generateBtn = document.getElementById('ai-generate-btn');
+    const generateInput = document.getElementById('ai-generate-input');
+
     closeBtn?.addEventListener('click', () => this.toggleToolPanel());
+
+    // Image import handler
+    importBtn?.addEventListener('click', () => {
+      imageInput?.click();
+    });
+
+    imageInput?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          this.currentImagePath = event.target?.result;
+          this.updateStatus('Image loaded. Click "Trace to SVG" to convert.');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Trace button
+    traceBtn?.addEventListener('click', () => {
+      if (!this.currentImagePath) {
+        this.updateStatus('Please import an image first');
+        return;
+      }
+      this.openTraceDialog();
+    });
+
+    // AI Search
+    searchBtn?.addEventListener('click', async () => {
+      const query = searchInput?.value.trim();
+      if (!query) {
+        this.updateStatus('Enter a search query');
+        return;
+      }
+      await this.aiSearch(query);
+    });
+
+    // AI Generate
+    generateBtn?.addEventListener('click', async () => {
+      const prompt = generateInput?.value.trim();
+      if (!prompt) {
+        this.updateStatus('Enter a design prompt');
+        return;
+      }
+      await this.aiGenerate(prompt);
+    });
 
     brushSizeSlider?.addEventListener('input', (e) => {
       this.brushSize = parseInt(e.target.value);
@@ -1070,7 +1127,125 @@ class CraftForgeApp {
     document.getElementById('trace-dialog').style.display = 'none';
     this.updateStatus('Traced image added to canvas');
   }
+
+  async aiSearch(query) {
+    const statusEl = document.getElementById('ai-status');
+    if (!statusEl) return;
+
+    statusEl.textContent = '🔍 Searching...';
+    statusEl.className = 'ai-status';
+    statusEl.style.display = 'block';
+
+    try {
+      const response = await fetch('http://localhost:4000/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await response.json();
+      
+      if (data.results && data.results.length > 0) {
+        // Get the first result
+        const result = data.results[0];
+        statusEl.textContent = `✅ Found: ${result.title}`;
+        statusEl.className = 'ai-status success';
+        this.updateStatus(`Design found: ${result.title}`);
+      } else {
+        statusEl.textContent = '❌ No results found';
+        statusEl.className = 'ai-status error';
+      }
+    } catch (error) {
+      statusEl.textContent = `❌ Error: ${error.message}`;
+      statusEl.className = 'ai-status error';
+      this.updateStatus('AI search failed: ' + error.message);
+    }
+  }
+
+  async aiGenerate(prompt) {
+    const statusEl = document.getElementById('ai-status');
+    if (!statusEl) return;
+
+    statusEl.textContent = '🎨 Generating...';
+    statusEl.className = 'ai-status';
+    statusEl.style.display = 'block';
+
+    try {
+      const response = await fetch('http://localhost:4000/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await response.json();
+      
+      if (data.svg) {
+        // Add the generated SVG to the canvas
+        const newObj = {
+          type: 'path',
+          x: 100,
+          y: 100,
+          width: 400,
+          height: 400,
+          svg: data.svg,
+          fill: 'transparent',
+          stroke: '#000000',
+          strokeWidth: 1,
+          rotation: 0
+        };
+
+        this.saveState();
+        this.objects.push(newObj);
+        this.selectedObjects = [newObj];
+        this.render();
+
+        statusEl.textContent = '✅ Design generated!';
+        statusEl.className = 'ai-status success';
+        this.updateStatus('AI design added to canvas');
+      } else {
+        statusEl.textContent = '❌ Generation failed';
+        statusEl.className = 'ai-status error';
+      }
+    } catch (error) {
+      statusEl.textContent = `❌ Error: ${error.message}`;
+      statusEl.className = 'ai-status error';
+      this.updateStatus('AI generation failed: ' + error.message);
+    }
+  }
+
+  openTraceDialog() {
+    // Show the trace dialog if it exists, or create a simple prompt
+    const dialog = document.getElementById('trace-dialog');
+    if (dialog) {
+      dialog.style.display = 'block';
+    } else {
+      // Fallback: trace with default settings
+      this.performImageTrace();
+    }
+  }
+
+  performImageTrace() {
+    if (!this.currentImagePath) return;
+    const threshold = 128;
+    const options = {
+      threshold,
+      turdSize: 2,
+      optTolerance: 0.2
+    };
+
+    this.updateStatus('Tracing image...');
+    
+    if (window.craftforge?.traceImage) {
+      window.craftforge.traceImage(this.currentImagePath, options)
+        .then(result => {
+          this.traceResult = result;
+          this.updateStatus('Trace preview ready. Click "Apply" to add to canvas.');
+          this.applyTrace();
+        })
+        .catch(err => this.updateStatus('Trace failed: ' + err.message));
+    }
 }
+
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

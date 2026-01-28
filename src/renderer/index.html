@@ -78,40 +78,77 @@
     <!-- Slide-Out Tool Panel -->
     <div id="tool-panel" class="tool-panel">
       <div class="panel-header">
-        <h3>Drawing Tools</h3>
+        <h3>Tools & AI</h3>
         <button id="close-panel" class="close-btn">×</button>
       </div>
       <div class="panel-content">
-        <div class="tool-row">
-          <label>Brush Size</label>
-          <input type="range" id="brush-size" min="1" max="20" value="3">
-          <span id="brush-size-val">3</span>
+        <!-- Image Import Section -->
+        <div class="panel-section">
+          <h4>Import & Trace</h4>
+          <div class="tool-row">
+            <button id="import-image-btn" class="tool-btn-panel" style="background: #6c5ce7; width: 100%">📁 Import Image</button>
+          </div>
+          <div class="tool-row">
+            <button id="trace-image-btn" class="tool-btn-panel" style="background: #a29bfe; width: 100%">✨ Trace to SVG</button>
+          </div>
+          <input type="file" id="image-input" accept="image/*" style="display: none;">
         </div>
-        <div class="tool-row">
-          <label>Brush Opacity</label>
-          <input type="range" id="brush-opacity" min="0.1" max="1" step="0.1" value="1">
-          <span id="brush-opacity-val">100%</span>
-        </div>
-        <div class="tool-row">
-          <label>Eraser Size</label>
-          <input type="range" id="eraser-size" min="5" max="50" value="10">
-          <span id="eraser-size-val">10</span>
-        </div>
+
         <div class="tool-divider"></div>
-        <div class="tool-row">
-          <button class="tool-quick" data-tool="brush" style="background: #4a90e2">Brush (B)</button>
+
+        <!-- Drawing Tools Section -->
+        <div class="panel-section">
+          <h4>Drawing Tools</h4>
+          <div class="tool-row">
+            <label>Brush Size</label>
+            <input type="range" id="brush-size" min="1" max="20" value="3">
+            <span id="brush-size-val">3</span>
+          </div>
+          <div class="tool-row">
+            <label>Brush Opacity</label>
+            <input type="range" id="brush-opacity" min="0.1" max="1" step="0.1" value="1">
+            <span id="brush-opacity-val">100%</span>
+          </div>
+          <div class="tool-row">
+            <label>Eraser Size</label>
+            <input type="range" id="eraser-size" min="5" max="50" value="10">
+            <span id="eraser-size-val">10</span>
+          </div>
+          <div class="tool-row">
+            <button class="tool-quick" data-tool="brush" style="background: #4a90e2">Brush</button>
+          </div>
+          <div class="tool-row">
+            <button class="tool-quick" data-tool="marker" style="background: #f5a623">Marker</button>
+          </div>
+          <div class="tool-row">
+            <button class="tool-quick" data-tool="eraser" style="background: #999">Eraser</button>
+          </div>
+          <div class="tool-row">
+            <button class="tool-quick" data-tool="pen" style="background: #7ed321">Pen</button>
+          </div>
+          <div class="tool-row">
+            <button class="tool-quick" data-tool="color-picker" style="background: #ff6b6b">Color Picker</button>
+          </div>
         </div>
-        <div class="tool-row">
-          <button class="tool-quick" data-tool="marker" style="background: #f5a623">Marker (M)</button>
-        </div>
-        <div class="tool-row">
-          <button class="tool-quick" data-tool="eraser" style="background: #999">Eraser (E)</button>
-        </div>
-        <div class="tool-row">
-          <button class="tool-quick" data-tool="pen" style="background: #7ed321">Pen (P)</button>
-        </div>
-        <div class="tool-row">
-          <button class="tool-quick" data-tool="color-picker" style="background: #ff6b6b">Color Picker (X)</button>
+
+        <div class="tool-divider"></div>
+
+        <!-- AI Search Section -->
+        <div class="panel-section">
+          <h4>AI Design Search</h4>
+          <div class="tool-row">
+            <input type="text" id="ai-search-input" placeholder="Search designs..." class="ai-input">
+          </div>
+          <div class="tool-row">
+            <button id="ai-search-btn" class="tool-btn-panel" style="background: #00b894; width: 100%">🔍 Search</button>
+          </div>
+          <div class="tool-row">
+            <input type="text" id="ai-generate-input" placeholder="Generate from prompt..." class="ai-input">
+          </div>
+          <div class="tool-row">
+            <button id="ai-generate-btn" class="tool-btn-panel" style="background: #fd79a8; width: 100%">🎨 Generate</button>
+          </div>
+          <div id="ai-status" class="ai-status" style="display: none;"></div>
         </div>
       </div>
     </div>
