@@ -1010,7 +1010,7 @@ class CraftForgeApp {
     }
   }
   
-  applyTrace() {
+  async applyTrace() {
     if (!this.traceResult) return;
 
     // Prepare SVG string and ensure it has explicit dimensions (helps Image rendering)
