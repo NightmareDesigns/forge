@@ -103,10 +103,29 @@ class CraftForgeApp {
     
     document.querySelectorAll('.tool-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        const tool = btn.dataset.tool;
+        
+        // Special handling for image tool - directly open file picker
+        if (tool === 'image') {
+          const imageInput = document.getElementById('image-input');
+          imageInput?.click();
+          return;
+        }
+        
+        // Special handling for trace tool - open trace dialog
+        if (tool === 'trace') {
+          if (!this.currentImagePath) {
+            this.updateStatus('Please import an image first');
+            return;
+          }
+          this.openTraceDialog();
+          return;
+        }
+        
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        this.currentTool = btn.dataset.tool;
-        this.updateStatus(`Tool: ${this.currentTool}`);
+        this.currentTool = tool;
+        this.updateStatus(`Tool: ${tool}`);
       });
     });
   }
