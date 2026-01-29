@@ -401,10 +401,66 @@
     </div>
   </section>
 
+  <!-- Pricing Section -->
+  <section class="download" id="pricing" style="padding: 80px 20px;">
+    <h2 style="font-size: 2.5rem; margin-bottom: 60px;">💰 Pricing</h2>
+    
+    <div class="pricing-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto;">
+      <!-- Trial Card -->
+      <div class="feature-card" style="border: 2px solid var(--blood-dark);">
+        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">🎯 Free Trial</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: var(--blood-light); margin: 20px 0;">FREE</p>
+        <p style="margin-bottom: 20px; color: var(--text-muted);">30 days full access</p>
+        <ul style="list-style: none; text-align: left; margin: 20px 0;">
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ All features unlocked</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ No credit card required</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Full testing period</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Unlimited designs</li>
+        </ul>
+        <a href="#download" class="btn btn-secondary" style="margin-top: 20px;">Download Trial</a>
+      </div>
+
+      <!-- Professional Card (Featured) -->
+      <div class="feature-card" style="border: 3px solid var(--blood); box-shadow: 0 0 30px rgba(139, 0, 0, 0.5); transform: scale(1.05);">
+        <div style="background: var(--blood); color: white; padding: 8px; margin: -20px -20px 20px -20px; font-weight: bold;">⭐ MOST POPULAR</div>
+        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">🔥 Professional</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; color: var(--blood-glow); margin: 20px 0;">$79.99</p>
+        <p style="margin-bottom: 20px; color: var(--text);">One-time payment • Lifetime license</p>
+        <ul style="list-style: none; text-align: left; margin: 20px 0;">
+          <li style="padding: 8px 0;">✅ Everything in trial</li>
+          <li style="padding: 8px 0;">✅ <strong>Unlimited time</strong></li>
+          <li style="padding: 8px 0;">✅ Free updates forever</li>
+          <li style="padding: 8px 0;">✅ Priority support</li>
+          <li style="padding: 8px 0;">✅ Commercial use OK</li>
+          <li style="padding: 8px 0;">✅ 30-day money back</li>
+        </ul>
+        <button onclick="openPaymentModal()" class="btn btn-primary" style="margin-top: 20px; background: var(--blood); border-color: var(--blood);">💳 Buy via CashApp</button>
+      </div>
+
+      <!-- Enterprise Card -->
+      <div class="feature-card" style="border: 2px solid var(--blood-dark);">
+        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">🏢 Enterprise</h3>
+        <p style="font-size: 2rem; font-weight: bold; color: var(--blood-light); margin: 20px 0;">Custom</p>
+        <p style="margin-bottom: 20px; color: var(--text-muted);">For teams & businesses</p>
+        <ul style="list-style: none; text-align: left; margin: 20px 0;">
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Multi-seat licenses</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Volume discounts</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Custom support SLA</li>
+          <li style="padding: 8px 0; color: var(--text-muted);">✅ Custom training</li>
+        </ul>
+        <a href="mailto:sales@nightmaredesigns.org" class="btn btn-secondary" style="margin-top: 20px;">Contact Sales</a>
+      </div>
+    </div>
+
+    <p style="margin-top: 60px; color: var(--text-muted); font-size: 0.9rem;">
+      💳 <strong>CashApp:</strong> $NGTMRE1 • Include your email in payment note for license key delivery within 24 hours
+    </p>
+  </section>
+
   <!-- Download Section -->
   <section class="download" id="download">
     <h2>⬇️ Download</h2>
-    <p>Available for Windows, macOS, and Linux. Always free. No account required.</p>
+    <p>Start your free 30-day trial. No credit card required.</p>
     
     <div class="platforms">
       <a href="#" class="platform-btn">
@@ -427,8 +483,150 @@
     <p>
       &copy; 2026 Nightmare Designs. 
       <a href="https://github.com/nightmaredesigns/forge">GitHub</a> · 
-      <a href="/docs">Documentation</a>
+      <a href="/docs">Documentation</a> ·
+      <a href="PAYMENT.md">Payment Info</a>
     </p>
   </footer>
+
+  <script>
+    function openPaymentModal() {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+      `;
+
+      const dialog = document.createElement('div');
+      dialog.style.cssText = `
+        background: var(--bg-card);
+        padding: 40px;
+        border-radius: 12px;
+        border: 2px solid var(--blood);
+        box-shadow: 0 5px 30px rgba(139, 0, 0, 0.5);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        color: var(--text);
+        animation: slideUp 0.3s ease;
+      `;
+
+      dialog.innerHTML = `
+        <h2 style="color: var(--blood-glow); margin-bottom: 20px; font-family: 'Creepster', cursive;">💰 Purchase License</h2>
+        
+        <div style="background: var(--blood-dark); padding: 25px; border-radius: 8px; margin: 25px 0; border: 2px solid var(--blood);">
+          <p style="margin: 0; font-size: 14px; color: var(--text-muted);">Send payment via CashApp</p>
+          <p style="margin: 15px 0 0 0; font-size: 36px; font-weight: bold; color: var(--blood-glow); font-family: monospace;">$NGTMRE1</p>
+          <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold; color: var(--text);">$79.99</p>
+        </div>
+
+        <div style="margin: 25px 0;">
+          <h3 style="color: var(--text); margin-bottom: 15px;">📧 Your Email</h3>
+          <input 
+            type="email" 
+            id="customer-email" 
+            placeholder="your@email.com" 
+            style="
+              width: 100%;
+              padding: 15px;
+              background: var(--bg-dark);
+              border: 2px solid var(--blood);
+              border-radius: 6px;
+              color: var(--text);
+              font-size: 16px;
+              box-sizing: border-box;
+            "
+          />
+          <p style="font-size: 13px; color: var(--text-muted); margin-top: 10px;">
+            ⚠️ Include this email in your CashApp payment note
+          </p>
+        </div>
+
+        <div style="background: var(--blood-dark); border-left: 4px solid var(--blood); padding: 20px; margin: 25px 0; border-radius: 4px; text-align: left;">
+          <p style="margin: 0 0 15px 0; font-size: 14px; color: var(--text);"><strong>📋 Payment Steps:</strong></p>
+          <ol style="margin: 0; padding-left: 20px; font-size: 14px; color: var(--text-muted);">
+            <li style="margin: 8px 0;">Open CashApp</li>
+            <li style="margin: 8px 0;">Send $79.99 to <strong style="color: var(--blood-glow);">$NGTMRE1</strong></li>
+            <li style="margin: 8px 0;">In note: <strong style="color: var(--text);">yourname@example.com</strong></li>
+            <li style="margin: 8px 0;">License key emailed within 24 hours ✅</li>
+          </ol>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+          <button 
+            onclick="copyToClipboard('$NGTMRE1')"
+            style="
+              flex: 1;
+              padding: 15px;
+              background: var(--blood);
+              color: white;
+              border: none;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: bold;
+              font-size: 16px;
+            "
+          >
+            📋 Copy Username
+          </button>
+          <button 
+            onclick="this.parentElement.parentElement.parentElement.remove()"
+            style="
+              flex: 1;
+              padding: 15px;
+              background: var(--bg-dark);
+              color: var(--text);
+              border: 2px solid var(--blood-dark);
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: bold;
+              font-size: 16px;
+            "
+          >
+            Close
+          </button>
+        </div>
+      `;
+
+      modal.appendChild(dialog);
+      document.body.appendChild(modal);
+
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      };
+
+      setTimeout(() => document.getElementById('customer-email').focus(), 100);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ CashApp username copied: ' + text);
+      }).catch(() => {
+        alert('CashApp username: ' + text);
+      });
+    }
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
 </body>
 </html>
