@@ -121,6 +121,44 @@ class CraftForgeApp {
           this.openTraceDialog();
           return;
         }
+
+        // Edit tool operations
+        if (tool === 'duplicate') {
+          this.duplicateSelected();
+          return;
+        }
+        if (tool === 'group') {
+          this.groupSelected();
+          return;
+        }
+        if (tool === 'ungroup') {
+          this.ungroupSelected();
+          return;
+        }
+        if (tool === 'flip-h') {
+          this.flipHorizontal();
+          return;
+        }
+        if (tool === 'flip-v') {
+          this.flipVertical();
+          return;
+        }
+        if (tool === 'rotate-90') {
+          this.rotate90();
+          return;
+        }
+        if (tool === 'align-left') {
+          this.alignLeft();
+          return;
+        }
+        if (tool === 'align-center') {
+          this.alignCenter();
+          return;
+        }
+        if (tool === 'align-right') {
+          this.alignRight();
+          return;
+        }
         
         document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -352,13 +390,58 @@ class CraftForgeApp {
     
     switch (obj.type) {
       case 'rect':
+      case 'rectangle':
         if (obj.fill !== 'transparent') this.ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
         this.ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
         break;
       case 'ellipse':
+      case 'circle':
         this.ctx.beginPath();
-        this.ctx.ellipse(obj.x + obj.width/2, obj.y + obj.height/2, obj.width/2, obj.height/2, 0, 0, Math.PI * 2);
+        const radius = obj.radius || obj.width / 2;
+        this.ctx.arc(obj.x + radius, obj.y + radius, radius, 0, Math.PI * 2);
         if (obj.fill !== 'transparent') this.ctx.fill();
+        this.ctx.stroke();
+        break;
+      case 'polygon':
+        this.ctx.beginPath();
+        const sides = obj.sides || 6;
+        const rad = obj.radius || 50;
+        const cx = obj.x + rad;
+        const cy = obj.y + rad;
+        for (let i = 0; i < sides; i++) {
+          const angle = (i * 2 * Math.PI / sides) - Math.PI / 2;
+          const px = cx + rad * Math.cos(angle);
+          const py = cy + rad * Math.sin(angle);
+          if (i === 0) this.ctx.moveTo(px, py);
+          else this.ctx.lineTo(px, py);
+        }
+        this.ctx.closePath();
+        if (obj.fill !== 'transparent') this.ctx.fill();
+        this.ctx.stroke();
+        break;
+      case 'star':
+        this.ctx.beginPath();
+        const points = obj.points || 5;
+        const outerRad = obj.outerRadius || 50;
+        const innerRad = obj.innerRadius || 25;
+        const scx = obj.x + outerRad;
+        const scy = obj.y + outerRad;
+        for (let i = 0; i < points * 2; i++) {
+          const angle = (i * Math.PI / points) - Math.PI / 2;
+          const r = i % 2 === 0 ? outerRad : innerRad;
+          const px = scx + r * Math.cos(angle);
+          const py = scy + r * Math.sin(angle);
+          if (i === 0) this.ctx.moveTo(px, py);
+          else this.ctx.lineTo(px, py);
+        }
+        this.ctx.closePath();
+        if (obj.fill !== 'transparent') this.ctx.fill();
+        this.ctx.stroke();
+        break;
+      case 'line':
+        this.ctx.beginPath();
+        this.ctx.moveTo(obj.x, obj.y);
+        this.ctx.lineTo(obj.x2 || obj.x + obj.width, obj.y2 || obj.y + obj.height);
         this.ctx.stroke();
         break;
       case 'path':
@@ -472,9 +555,21 @@ class CraftForgeApp {
     
     if (this.currentTool === 'select') {
       this.handleSelection(x, y);
+    } else if (this.currentTool === 'rectangle') {
+      // Will create on mouse up
+    } else if (this.currentTool === 'circle') {
+      // Will create on mouse up
+    } else if (this.currentTool === 'polygon') {
+      this.createPolygon(x, y, 6, 50);
+      this.isDrawing = false;
+    } else if (this.currentTool === 'star') {
+      this.createStar(x, y, 5, 50, 25);
+      this.isDrawing = false;
+    } else if (this.currentTool === 'line') {
+      // Will create on mouse up
     } else if (this.currentTool === 'shapes') {
       this.startDrawingShape(x, y);
-    } else if (['brush', 'marker', 'eraser', 'pen'].includes(this.currentTool)) {
+    } else if (['brush', 'marker', 'eraser', 'pen', 'freehand'].includes(this.currentTool)) {
       this.strokes.push({ tool: this.currentTool, points: [{ x, y }] });
     } else if (this.currentTool === 'color-picker') {
       this.handleColorPick(x, y);
@@ -503,6 +598,28 @@ class CraftForgeApp {
   }
 
   handleMouseUp(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / this.zoom;
+    const y = (e.clientY - rect.top) / this.zoom;
+
+    if (this.isDrawing) {
+      const width = Math.abs(x - this.startX);
+      const height = Math.abs(y - this.startY);
+      
+      if (this.currentTool === 'rectangle' && width > 10 && height > 10) {
+        this.createRectangle(
+          Math.min(this.startX, x),
+          Math.min(this.startY, y),
+          width,
+          height
+        );
+      } else if (this.currentTool === 'circle' && width > 10) {
+        this.createCircle(this.startX, this.startY, width / 2);
+      } else if (this.currentTool === 'line' && (width > 10 || height > 10)) {
+        this.createLine(this.startX, this.startY, x, y);
+      }
+    }
+
     this.isDrawing = false;
     if (this.strokes.length > 0) {
       const lastStroke = this.strokes[this.strokes.length - 1];
@@ -707,13 +824,200 @@ class CraftForgeApp {
   }
 
   groupSelected() {
-    // Group implementation
-    this.updateStatus('Grouped objects');
+    if (this.selectedObjects.length < 2) {
+      this.updateStatus('Select 2+ objects to group');
+      return;
+    }
+    this.saveState();
+    const group = {
+      type: 'group',
+      objects: [...this.selectedObjects],
+      x: Math.min(...this.selectedObjects.map(o => o.x)),
+      y: Math.min(...this.selectedObjects.map(o => o.y)),
+    };
+    this.objects = this.objects.filter(obj => !this.selectedObjects.includes(obj));
+    this.objects.push(group);
+    this.selectedObjects = [group];
+    this.render();
+    this.updateStatus('Grouped ' + group.objects.length + ' objects');
   }
 
   ungroupSelected() {
-    // Ungroup implementation
-    this.updateStatus('Ungrouped objects');
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    const groups = this.selectedObjects.filter(obj => obj.type === 'group');
+    if (groups.length === 0) {
+      this.updateStatus('Select a group to ungroup');
+      return;
+    }
+    groups.forEach(group => {
+      const index = this.objects.indexOf(group);
+      this.objects.splice(index, 1, ...group.objects);
+    });
+    this.selectedObjects = [];
+    this.render();
+    this.updateStatus('Ungrouped');
+  }
+
+  duplicateSelected() {
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    const duplicates = this.selectedObjects.map(obj => {
+      const dup = JSON.parse(JSON.stringify(obj));
+      dup.x += 20;
+      dup.y += 20;
+      return dup;
+    });
+    this.objects.push(...duplicates);
+    this.selectedObjects = duplicates;
+    this.render();
+    this.updateStatus('Duplicated ' + duplicates.length + ' object(s)');
+  }
+
+  flipHorizontal() {
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    this.selectedObjects.forEach(obj => {
+      obj.scaleX = (obj.scaleX || 1) * -1;
+    });
+    this.render();
+    this.updateStatus('Flipped horizontally');
+  }
+
+  flipVertical() {
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    this.selectedObjects.forEach(obj => {
+      obj.scaleY = (obj.scaleY || 1) * -1;
+    });
+    this.render();
+    this.updateStatus('Flipped vertically');
+  }
+
+  rotate90() {
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    this.selectedObjects.forEach(obj => {
+      obj.rotation = (obj.rotation || 0) + 90;
+      if (obj.rotation >= 360) obj.rotation -= 360;
+    });
+    this.render();
+    this.updateStatus('Rotated 90°');
+  }
+
+  alignLeft() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    const minX = Math.min(...this.selectedObjects.map(o => o.x));
+    this.selectedObjects.forEach(obj => obj.x = minX);
+    this.render();
+    this.updateStatus('Aligned left');
+  }
+
+  alignCenter() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    const minX = Math.min(...this.selectedObjects.map(o => o.x));
+    const maxX = Math.max(...this.selectedObjects.map(o => o.x + o.width));
+    const centerX = (minX + maxX) / 2;
+    this.selectedObjects.forEach(obj => obj.x = centerX - obj.width / 2);
+    this.render();
+    this.updateStatus('Aligned center');
+  }
+
+  alignRight() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    const maxX = Math.max(...this.selectedObjects.map(o => o.x + o.width));
+    this.selectedObjects.forEach(obj => obj.x = maxX - obj.width);
+    this.render();
+    this.updateStatus('Aligned right');
+  }
+
+  createRectangle(x, y, width, height) {
+    this.saveState();
+    const rect = {
+      type: 'rectangle',
+      x, y, width, height,
+      fill: '#3498db',
+      stroke: '#000000',
+      strokeWidth: 2
+    };
+    this.objects.push(rect);
+    this.selectedObjects = [rect];
+    this.render();
+  }
+
+  createCircle(x, y, radius) {
+    this.saveState();
+    const circle = {
+      type: 'circle',
+      x, y,
+      radius,
+      width: radius * 2,
+      height: radius * 2,
+      fill: '#e74c3c',
+      stroke: '#000000',
+      strokeWidth: 2
+    };
+    this.objects.push(circle);
+    this.selectedObjects = [circle];
+    this.render();
+  }
+
+  createPolygon(x, y, sides, radius) {
+    this.saveState();
+    const polygon = {
+      type: 'polygon',
+      x, y,
+      sides: sides || 6,
+      radius: radius || 50,
+      width: radius * 2,
+      height: radius * 2,
+      fill: '#9b59b6',
+      stroke: '#000000',
+      strokeWidth: 2
+    };
+    this.objects.push(polygon);
+    this.selectedObjects = [polygon];
+    this.render();
+  }
+
+  createStar(x, y, points, outerRadius, innerRadius) {
+    this.saveState();
+    const star = {
+      type: 'star',
+      x, y,
+      points: points || 5,
+      outerRadius: outerRadius || 50,
+      innerRadius: innerRadius || 25,
+      width: outerRadius * 2,
+      height: outerRadius * 2,
+      fill: '#f39c12',
+      stroke: '#000000',
+      strokeWidth: 2
+    };
+    this.objects.push(star);
+    this.selectedObjects = [star];
+    this.render();
+  }
+
+  createLine(x1, y1, x2, y2) {
+    this.saveState();
+    const line = {
+      type: 'line',
+      x: x1,
+      y: y1,
+      x2: x2,
+      y2: y2,
+      width: Math.abs(x2 - x1),
+      height: Math.abs(y2 - y1),
+      stroke: '#000000',
+      strokeWidth: 2
+    };
+    this.objects.push(line);
+    this.selectedObjects = [line];
+    this.render();
   }
 
   // View toggles
