@@ -43,7 +43,7 @@
           <li>✅ Priority support</li>
           <li>✅ Future AI features included</li>
         </ul>
-        <button class="btn btn-primary btn-large" onclick="openLicensePortal()">Buy License</button>
+        <button class="btn btn-primary btn-large" onclick="openPaymentModal()">Buy License via CashApp</button>
         <p class="card-note">One-time payment. No subscription. Perpetual license.</p>
       </div>
 
@@ -389,9 +389,138 @@ function downloadApp() {
   window.location.href = 'https://github.com/NightmareDesigns/CraftForge/releases';
 }
 
-function openLicensePortal() {
-  // This would link to your license purchase portal
-  alert('🛒 License purchase portal coming soon!\n\nContact: support@nightmaredesigns.org');
+function openPaymentModal() {
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  `;
+
+  const dialog = document.createElement('div');
+  dialog.style.cssText = `
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    color: #333;
+  `;
+
+  dialog.innerHTML = `
+    <h2 style="color: #8B0000; margin-bottom: 20px;">💰 Purchase CraftForge License</h2>
+    
+    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <p style="margin: 0; font-size: 14px; color: #666;">Send payment via CashApp</p>
+      <p style="margin: 10px 0 0 0; font-size: 28px; font-weight: bold; color: #8B0000; font-family: monospace;">$NGTMRE1</p>
+      <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: bold; color: #333;">$79.99</p>
+    </div>
+
+    <div style="margin: 25px 0;">
+      <h3 style="color: #333; margin-bottom: 15px;">📧 Your Email Address</h3>
+      <input 
+        type="email" 
+        id="customer-email" 
+        placeholder="your@email.com" 
+        style="
+          width: 100%;
+          padding: 12px;
+          border: 2px solid #8B0000;
+          border-radius: 6px;
+          font-size: 14px;
+          box-sizing: border-box;
+        "
+      />
+      <p style="font-size: 12px; color: #666; margin-top: 8px;">
+        ⚠️ Include this email in your CashApp payment note
+      </p>
+    </div>
+
+    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; text-align: left;">
+      <p style="margin: 0; font-size: 13px; color: #333;"><strong>📋 Steps:</strong></p>
+      <ol style="margin: 10px 0 0 0; padding-left: 20px; font-size: 13px;">
+        <li>Open CashApp app</li>
+        <li>Send $79.99 to <strong>$NGTMRE1</strong></li>
+        <li>In payment note, put your email: <strong>yourname@example.com</strong></li>
+        <li>Send payment</li>
+        <li>License key emailed within 24 hours</li>
+      </ol>
+    </div>
+
+    <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 4px;">
+      <p style="margin: 0; font-size: 13px; color: #155724;">
+        ✅ <strong>Money-back guarantee:</strong> Not satisfied? Full refund within 30 days.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button 
+        onclick="copyToClipboard('$NGTMRE1')"
+        style="
+          flex: 1;
+          padding: 12px;
+          background: #8B0000;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 14px;
+        "
+      >
+        📋 Copy CashApp Username
+      </button>
+      <button 
+        onclick="this.parentElement.parentElement.parentElement.remove()"
+        style="
+          flex: 1;
+          padding: 12px;
+          background: #6c757d;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 14px;
+        "
+      >
+        Close
+      </button>
+    </div>
+
+    <p style="font-size: 12px; color: #666; margin-top: 20px;">
+      Questions? Email: <strong>support@nightmaredesigns.org</strong>
+    </p>
+  `;
+
+  modal.appendChild(dialog);
+  document.body.appendChild(modal);
+
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  };
+
+  // Focus on email input
+  setTimeout(() => document.getElementById('customer-email').focus(), 100);
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✅ CashApp username copied to clipboard: ' + text);
+  }).catch(() => {
+    alert('CashApp username: ' + text);
+  });
 }
 
 function contactEnterprise() {
