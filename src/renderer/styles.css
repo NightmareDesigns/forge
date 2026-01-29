@@ -72,6 +72,8 @@ body {
   flex-direction: column;
   gap: 15px;
   border-right: 1px solid var(--border);
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .tool-group {
@@ -108,6 +110,8 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
+  grid-column: 2;
+  grid-row: 2;
 }
 
 #rulers {
@@ -199,6 +203,10 @@ body {
   background: var(--bg-medium);
   border-left: 1px solid var(--border);
   overflow-y: auto;
+  display: block;
+  width: 280px;
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .panel-section {
