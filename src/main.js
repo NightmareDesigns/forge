@@ -308,7 +308,8 @@ function setupIPC() {
   // Vectorization IPC
   ipcMain.handle('trace-image', async (event, imagePath, options) => {
     try {
-      const validatedPath = validateFilePath(imagePath);
+      // Allow data URLs (base64 encoded images) to pass through without path validation
+      const validatedPath = imagePath.startsWith('data:') ? imagePath : validateFilePath(imagePath);
       const validatedOptions = validateTraceOptions(options);
       return await vectorizer.traceImage(validatedPath, validatedOptions);
     } catch (err) {
@@ -318,7 +319,8 @@ function setupIPC() {
   
   ipcMain.handle('posterize-image', async (event, imagePath, steps, options) => {
     try {
-      const validatedPath = validateFilePath(imagePath);
+      // Allow data URLs (base64 encoded images) to pass through without path validation
+      const validatedPath = imagePath.startsWith('data:') ? imagePath : validateFilePath(imagePath);
       const validatedOptions = validateTraceOptions(options);
       const validatedSteps = Math.max(2, Math.min(8, parseInt(steps) || 3));
       return await vectorizer.posterizeTrace(validatedPath, validatedSteps, validatedOptions);
@@ -329,7 +331,8 @@ function setupIPC() {
   
   ipcMain.handle('preprocess-image', async (event, imagePath, options) => {
     try {
-      const validatedPath = validateFilePath(imagePath);
+      // Allow data URLs (base64 encoded images) to pass through without path validation
+      const validatedPath = imagePath.startsWith('data:') ? imagePath : validateFilePath(imagePath);
       const validatedOptions = validateTraceOptions(options);
       return await vectorizer.preprocessImage(validatedPath, validatedOptions);
     } catch (err) {
