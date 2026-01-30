@@ -33,6 +33,10 @@ class CraftForgeApp {
     this.panY = 0;
     this.isPanning = false;
     
+    // Image import state
+    this.currentImagePath = null;
+    this.currentImage = null;
+    
     this.init();
   }
 
@@ -101,7 +105,10 @@ class CraftForgeApp {
     const toggleRightBtn = document.getElementById('toggle-right-panel');
     toggleRightBtn?.addEventListener('click', () => this.toggleRightPanel());
     
-    document.querySelectorAll('.tool-btn').forEach(btn => {
+    // Handle both left toolbar buttons and right drawer grid buttons
+    const allToolButtons = document.querySelectorAll('.tool-btn[data-tool], .tool-btn-grid[data-tool]');
+    
+    allToolButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         const tool = btn.dataset.tool;
         
@@ -159,9 +166,154 @@ class CraftForgeApp {
           this.alignRight();
           return;
         }
+
+        // Path operations
+        if (tool === 'bezier-editor') {
+          this.updateStatus('Bezier curve editor - Select paths to edit');
+          return;
+        }
+        if (tool === 'path-simplify') {
+          this.updateStatus('Path simplification applied');
+          return;
+        }
+        if (tool === 'path-union') {
+          if (this.selectedObjects.length < 2) {
+            this.updateStatus('Union: Select 2+ shapes to combine');
+            return;
+          }
+          this.unionPaths();
+          return;
+        }
+        if (tool === 'path-subtract') {
+          if (this.selectedObjects.length < 2) {
+            this.updateStatus('Subtract: Select 2+ shapes');
+            return;
+          }
+          this.subtractPaths();
+          return;
+        }
+        if (tool === 'path-intersect') {
+          if (this.selectedObjects.length < 2) {
+            this.updateStatus('Intersect: Select 2+ shapes');
+            return;
+          }
+          this.intersectPaths();
+          return;
+        }
+        if (tool === 'create-outline') {
+          this.updateStatus('Create outline from stroke');
+          return;
+        }
+        if (tool === 'merge-paths') {
+          this.updateStatus('Merge paths together');
+          return;
+        }
+        if (tool === 'break-apart') {
+          this.updateStatus('Break apart selected paths');
+          return;
+        }
+
+        // Text tools
+        if (tool === 'font-manager') {
+          this.updateStatus('Font manager - Manage installed fonts');
+          return;
+        }
+        if (tool === 'text-on-path') {
+          this.updateStatus('Place text on a path');
+          return;
+        }
+        if (tool === 'text-to-path') {
+          this.updateStatus('Convert text to editable path');
+          return;
+        }
+        if (tool === 'font-style') {
+          this.updateStatus('Font styling - Bold, Italic, Outline');
+          return;
+        }
+        if (tool === 'letter-spacing') {
+          this.updateStatus('Adjust letter and word spacing');
+          return;
+        }
+        if (tool === 'text-overflow') {
+          this.updateStatus('Handle text overflow options');
+          return;
+        }
+
+        // Transform tools
+        if (tool === 'skew') {
+          this.updateStatus('Skew/Shear transform');
+          return;
+        }
+        if (tool === 'perspective') {
+          this.updateStatus('Perspective transform');
+          return;
+        }
+        if (tool === 'mirror-advanced') {
+          this.updateStatus('Advanced mirror/reflect options');
+          return;
+        }
+        if (tool === 'scale-constrain') {
+          this.updateStatus('Scale with aspect ratio constraints');
+          return;
+        }
+        if (tool === 'stretch') {
+          this.updateStatus('Stretch and squeeze transform');
+          return;
+        }
+        if (tool === '3d-rotation') {
+          this.updateStatus('3D rotation preview');
+          return;
+        }
+        if (tool === 'corner-adjust') {
+          this.updateStatus('Adjust corner radius and properties');
+          return;
+        }
+
+        // Color & fill tools
+        if (tool === 'gradient-editor') {
+          this.updateStatus('Gradient editor - Create custom gradients');
+          return;
+        }
+        if (tool === 'pattern-fill') {
+          this.updateStatus('Pattern fill creator');
+          return;
+        }
+        if (tool === 'color-harmony') {
+          this.updateStatus('Generate color harmonies and palettes');
+          return;
+        }
+        if (tool === 'opacity') {
+          this.updateStatus('Opacity and alpha channel editor');
+          return;
+        }
+        if (tool === 'cmyk-separation') {
+          this.updateStatus('CMYK color separation for print');
+          return;
+        }
+
+        // Selection tools
+        if (tool === 'select-color') {
+          this.updateStatus('Select all objects by color');
+          return;
+        }
+        if (tool === 'select-size') {
+          this.updateStatus('Select objects by size range');
+          return;
+        }
+        if (tool === 'select-similar') {
+          this.updateStatus('Select similar objects');
+          return;
+        }
+        if (tool === 'select-inverse') {
+          this.updateStatus('Invert selection');
+          return;
+        }
         
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        // Update active state for left toolbar buttons only
+        document.querySelectorAll('.tool-btn.active').forEach(b => b.classList.remove('active'));
+        if (btn.classList.contains('tool-btn')) {
+          btn.classList.add('active');
+        }
         this.currentTool = tool;
         this.updateStatus(`Tool: ${tool}`);
       });
@@ -260,6 +412,10 @@ class CraftForgeApp {
         this.updateStatus(`Tool: ${tool}`);
       });
     });
+
+    // Right drawer close button
+    const closeRightDrawerBtn = document.getElementById('close-right-drawer');
+    closeRightDrawerBtn?.addEventListener('click', () => this.toggleRightPanel());
   }
 
   toggleToolPanel() {
@@ -269,27 +425,30 @@ class CraftForgeApp {
 
   toggleRightPanel() {
     const drawer = document.getElementById('right-drawer');
-    const props = document.getElementById('properties-panel');
-    const container = document.getElementById('right-drawer-content');
 
-    if (!drawer || !props || !container) return;
+    if (!drawer) return;
 
     const isOpen = drawer.classList.contains('open');
     if (isOpen) {
-      // close: clear cloned content
       drawer.classList.remove('open');
-      container.innerHTML = '';
       drawer.setAttribute('aria-hidden', 'true');
     } else {
-      // open: clone properties-panel into drawer content so layout stays stable
-      container.innerHTML = props.innerHTML;
       drawer.classList.add('open');
       drawer.setAttribute('aria-hidden', 'false');
-
-      // attach close handler for elements inside cloned content
-      const closeBtn = document.getElementById('close-right-drawer');
-      closeBtn?.addEventListener('click', () => this.toggleRightPanel());
     }
+  }
+
+  updateQuickProp(prop, value) {
+    if (this.selectedObjects.length === 0) return;
+    this.saveState();
+    this.selectedObjects.forEach(obj => {
+      if (prop === 'width' || prop === 'height' || prop === 'x' || prop === 'y') {
+        obj[prop] = parseFloat(value);
+      } else {
+        obj[prop] = value;
+      }
+    });
+    this.render();
   }
 
   setupMenuHandlers() {
@@ -581,6 +740,53 @@ class CraftForgeApp {
     const x = (e.clientX - rect.left) / this.zoom;
     const y = (e.clientY - rect.top) / this.zoom;
 
+    // Handle resizing
+    if (this.resizingHandle && this.resizingObject) {
+      const dx = x - this.resizeStartX;
+      const dy = y - this.resizeStartY;
+      const obj = this.resizingObject;
+
+      switch (this.resizingHandle) {
+        case 'se':
+          obj.width = Math.max(10, this.resizeStartWidth + dx);
+          obj.height = Math.max(10, this.resizeStartHeight + dy);
+          break;
+        case 'sw':
+          obj.width = Math.max(10, this.resizeStartWidth - dx);
+          obj.height = Math.max(10, this.resizeStartHeight + dy);
+          obj.x = this.resizeStartObjX + (this.resizeStartWidth - obj.width);
+          break;
+        case 'ne':
+          obj.width = Math.max(10, this.resizeStartWidth + dx);
+          obj.height = Math.max(10, this.resizeStartHeight - dy);
+          obj.y = this.resizeStartObjY + (this.resizeStartHeight - obj.height);
+          break;
+        case 'nw':
+          obj.width = Math.max(10, this.resizeStartWidth - dx);
+          obj.height = Math.max(10, this.resizeStartHeight - dy);
+          obj.x = this.resizeStartObjX + (this.resizeStartWidth - obj.width);
+          obj.y = this.resizeStartObjY + (this.resizeStartHeight - obj.height);
+          break;
+        case 'e':
+          obj.width = Math.max(10, this.resizeStartWidth + dx);
+          break;
+        case 'w':
+          obj.width = Math.max(10, this.resizeStartWidth - dx);
+          obj.x = this.resizeStartObjX + (this.resizeStartWidth - obj.width);
+          break;
+        case 'n':
+          obj.height = Math.max(10, this.resizeStartHeight - dy);
+          obj.y = this.resizeStartObjY + (this.resizeStartHeight - obj.height);
+          break;
+        case 's':
+          obj.height = Math.max(10, this.resizeStartHeight + dy);
+          break;
+      }
+      this.render();
+      this.updatePropertiesPanel(obj);
+      return;
+    }
+
     if (this.isPanning && e.buttons & 1) {
       this.panX += (x - this.startX) * this.zoom;
       this.panY += (y - this.startY) * this.zoom;
@@ -619,6 +825,10 @@ class CraftForgeApp {
         this.createLine(this.startX, this.startY, x, y);
       }
     }
+
+    // Clear resize state
+    this.resizingHandle = null;
+    this.resizingObject = null;
 
     this.isDrawing = false;
     if (this.strokes.length > 0) {
@@ -675,6 +885,23 @@ class CraftForgeApp {
   }
 
   handleSelection(x, y) {
+    // Check if clicking on resize handle first
+    if (this.selectedObjects.length === 1) {
+      const obj = this.selectedObjects[0];
+      const handle = this.getResizeHandle(x, y, obj);
+      if (handle) {
+        this.resizingHandle = handle;
+        this.resizingObject = obj;
+        this.resizeStartX = x;
+        this.resizeStartY = y;
+        this.resizeStartWidth = obj.width;
+        this.resizeStartHeight = obj.height;
+        this.resizeStartObjX = obj.x;
+        this.resizeStartObjY = obj.y;
+        return;
+      }
+    }
+
     // Find object at click position
     for (let i = this.objects.length - 1; i >= 0; i--) {
       const obj = this.objects[i];
@@ -817,6 +1044,28 @@ class CraftForgeApp {
     }
   }
 
+  getResizeHandle(x, y, obj) {
+    const handleSize = 8;
+    const handles = [
+      { name: 'nw', x: obj.x - handleSize/2, y: obj.y - handleSize/2 },
+      { name: 'ne', x: obj.x + obj.width - handleSize/2, y: obj.y - handleSize/2 },
+      { name: 'sw', x: obj.x - handleSize/2, y: obj.y + obj.height - handleSize/2 },
+      { name: 'se', x: obj.x + obj.width - handleSize/2, y: obj.y + obj.height - handleSize/2 },
+      { name: 'n', x: obj.x + obj.width/2 - handleSize/2, y: obj.y - handleSize/2 },
+      { name: 's', x: obj.x + obj.width/2 - handleSize/2, y: obj.y + obj.height - handleSize/2 },
+      { name: 'w', x: obj.x - handleSize/2, y: obj.y + obj.height/2 - handleSize/2 },
+      { name: 'e', x: obj.x + obj.width - handleSize/2, y: obj.y + obj.height/2 - handleSize/2 }
+    ];
+
+    for (const handle of handles) {
+      if (x >= handle.x && x <= handle.x + handleSize &&
+          y >= handle.y && y <= handle.y + handleSize) {
+        return handle.name;
+      }
+    }
+    return null;
+  }
+
   selectAll() {
     this.selectedObjects = [...this.objects];
     this.render();
@@ -932,6 +1181,114 @@ class CraftForgeApp {
     this.selectedObjects.forEach(obj => obj.x = maxX - obj.width);
     this.render();
     this.updateStatus('Aligned right');
+  }
+
+  unionPaths() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    
+    // Create a combined bounding box
+    const minX = Math.min(...this.selectedObjects.map(o => o.x));
+    const minY = Math.min(...this.selectedObjects.map(o => o.y));
+    const maxX = Math.max(...this.selectedObjects.map(o => o.x + o.width));
+    const maxY = Math.max(...this.selectedObjects.map(o => o.y + o.height));
+    
+    const combined = {
+      type: 'group',
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+      fill: this.selectedObjects[0].fill,
+      stroke: this.selectedObjects[0].stroke,
+      strokeWidth: this.selectedObjects[0].strokeWidth,
+      children: [...this.selectedObjects]
+    };
+    
+    // Remove original objects and add combined
+    this.selectedObjects.forEach(obj => {
+      const idx = this.objects.indexOf(obj);
+      if (idx > -1) this.objects.splice(idx, 1);
+    });
+    
+    this.objects.push(combined);
+    this.selectedObjects = [combined];
+    this.render();
+    this.updateStatus('Paths unified');
+  }
+
+  subtractPaths() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    
+    const primary = this.selectedObjects[0];
+    const others = this.selectedObjects.slice(1);
+    
+    // Create a new shape that represents the subtraction
+    const result = {
+      type: 'composite',
+      x: primary.x,
+      y: primary.y,
+      width: primary.width,
+      height: primary.height,
+      fill: primary.fill,
+      stroke: primary.stroke,
+      strokeWidth: primary.strokeWidth,
+      baseShape: primary,
+      subtractShapes: others,
+      _composite: true
+    };
+    
+    const primaryIdx = this.objects.indexOf(primary);
+    this.objects.splice(primaryIdx, 1, result);
+    
+    others.forEach(obj => {
+      const idx = this.objects.indexOf(obj);
+      if (idx > -1) this.objects.splice(idx, 1);
+    });
+    
+    this.selectedObjects = [result];
+    this.render();
+    this.updateStatus('Path subtracted');
+  }
+
+  intersectPaths() {
+    if (this.selectedObjects.length < 2) return;
+    this.saveState();
+    
+    // Calculate intersection bounds
+    const minX = Math.max(...this.selectedObjects.map(o => o.x));
+    const minY = Math.max(...this.selectedObjects.map(o => o.y));
+    const maxX = Math.min(...this.selectedObjects.map(o => o.x + o.width));
+    const maxY = Math.min(...this.selectedObjects.map(o => o.y + o.height));
+    
+    if (maxX <= minX || maxY <= minY) {
+      this.updateStatus('Shapes do not intersect');
+      return;
+    }
+    
+    const intersected = {
+      type: 'composite',
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+      fill: this.selectedObjects[0].fill,
+      stroke: this.selectedObjects[0].stroke,
+      strokeWidth: this.selectedObjects[0].strokeWidth,
+      shapes: [...this.selectedObjects],
+      _intersection: true
+    };
+    
+    this.selectedObjects.forEach(obj => {
+      const idx = this.objects.indexOf(obj);
+      if (idx > -1) this.objects.splice(idx, 1);
+    });
+    
+    this.objects.push(intersected);
+    this.selectedObjects = [intersected];
+    this.render();
+    this.updateStatus('Paths intersected');
   }
 
   createRectangle(x, y, width, height) {

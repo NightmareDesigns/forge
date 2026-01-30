@@ -112,7 +112,7 @@ function createMenuTemplate() {
     {
       label: 'Help',
       submenu: [
-{ label: 'Documentation', click: () => require('electron').shell.openExternal('https://nightmaredesigns.org/docs') },
+        { label: 'Documentation', click: () => require('electron').shell.openExternal('https://nightmaredesigns.org/docs') },
         { label: 'Website', click: () => require('electron').shell.openExternal('https://nightmaredesigns.org') },
         { label: 'About CraftForge', click: showAbout }
       ]

@@ -32,7 +32,7 @@
       <a href="https://nightmaredesigns.org" target="_blank" class="header-link">nightmaredesigns.org</a>
     </header>
 
-    <!-- Left Toolbar -->
+    <!-- Left Toolbar (Scrollable) -->
     <aside id="toolbar">
       <div class="tool-group">
         <button class="tool-btn" id="toggle-panel" title="Drawing Tools & Options">
@@ -48,7 +48,6 @@
         </button>
       </div>
 
-      <!-- Design Tools -->
       <div class="tool-group">
         <button class="tool-btn" data-tool="pen" title="Pen Tool (P)">
           <span class="icon">✒</span>
@@ -62,78 +61,20 @@
       </div>
 
       <div class="tool-group">
-        <button class="tool-btn" data-tool="rectangle" title="Rectangle (R)">
-          <span class="icon">▭</span>
-        </button>
-        <button class="tool-btn" data-tool="circle" title="Circle (C)">
-          <span class="icon">◯</span>
-        </button>
-        <button class="tool-btn" data-tool="polygon" title="Polygon">
-          <span class="icon">⬡</span>
-        </button>
-        <button class="tool-btn" data-tool="star" title="Star">
-          <span class="icon">★</span>
-        </button>
-      </div>
-
-      <div class="tool-group">
-        <button class="tool-btn" data-tool="line" title="Line (L)">
-          <span class="icon">╱</span>
-        </button>
         <button class="tool-btn" data-tool="text" title="Text (T)">
           <span class="icon">T</span>
         </button>
         <button class="tool-btn" data-tool="image" title="Upload Image">
           <span class="icon">🖼</span>
         </button>
+      </div>
+
+      <div class="tool-group">
         <button class="tool-btn" data-tool="trace" title="Image Trace">
           <span class="icon">⊡</span>
         </button>
-      </div>
-
-      <!-- Edit Tools -->
-      <div class="tool-group">
-        <button class="tool-btn" data-tool="duplicate" title="Duplicate (Ctrl+D)">
-          <span class="icon">⊕</span>
-        </button>
-        <button class="tool-btn" data-tool="group" title="Group (Ctrl+G)">
-          <span class="icon">⊞</span>
-        </button>
-        <button class="tool-btn" data-tool="ungroup" title="Ungroup (Ctrl+Shift+G)">
-          <span class="icon">⊟</span>
-        </button>
-      </div>
-
-      <div class="tool-group">
-        <button class="tool-btn" data-tool="flip-h" title="Flip Horizontal">
-          <span class="icon">⇄</span>
-        </button>
-        <button class="tool-btn" data-tool="flip-v" title="Flip Vertical">
-          <span class="icon">⇅</span>
-        </button>
-        <button class="tool-btn" data-tool="rotate-90" title="Rotate 90°">
-          <span class="icon">↻</span>
-        </button>
-      </div>
-
-      <div class="tool-group">
-        <button class="tool-btn" data-tool="align-left" title="Align Left">
-          <span class="icon">⫷</span>
-        </button>
-        <button class="tool-btn" data-tool="align-center" title="Align Center">
-          <span class="icon">⫼</span>
-        </button>
-        <button class="tool-btn" data-tool="align-right" title="Align Right">
-          <span class="icon">⫸</span>
-        </button>
-      </div>
-
-      <div class="tool-group">
-        <button class="tool-btn" data-tool="offset" title="Offset Path">
-          <span class="icon">⊚</span>
-        </button>
-        <button class="tool-btn" data-tool="contour" title="Contour">
-          <span class="icon">◎</span>
+        <button class="tool-btn" data-tool="color-picker" title="Color Picker (X)">
+          <span class="icon">🎨</span>
         </button>
       </div>
     </aside>
@@ -350,13 +291,218 @@
       </div>
     </aside>
 
-    <!-- Right Slide-Out Drawer (clones properties when opened) -->
+    <!-- Right Slide-Out Drawer (All Tools) -->
     <div id="right-drawer" class="right-drawer" aria-hidden="true">
       <div class="right-drawer-header">
-        <h3>Properties</h3>
+        <h3>Tools & Settings</h3>
         <button id="close-right-drawer" class="close-btn">×</button>
       </div>
-      <div id="right-drawer-content" class="right-drawer-content"></div>
+      <div id="right-drawer-content" class="right-drawer-content">
+        <!-- Shape Tools -->
+        <div class="drawer-section">
+          <h4>Shapes</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="rectangle" title="Rectangle (R)">
+              <span class="icon">▭</span><span class="label">Rectangle</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="circle" title="Circle (C)">
+              <span class="icon">◯</span><span class="label">Circle</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="polygon" title="Polygon">
+              <span class="icon">⬡</span><span class="label">Polygon</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="star" title="Star">
+              <span class="icon">★</span><span class="label">Star</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="line" title="Line (L)">
+              <span class="icon">╱</span><span class="label">Line</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Edit Tools -->
+        <div class="drawer-section">
+          <h4>Edit</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="duplicate" title="Duplicate (Ctrl+D)">
+              <span class="icon">⊕</span><span class="label">Duplicate</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="group" title="Group (Ctrl+G)">
+              <span class="icon">⊞</span><span class="label">Group</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="ungroup" title="Ungroup (Ctrl+Shift+G)">
+              <span class="icon">⊟</span><span class="label">Ungroup</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="flip-h" title="Flip Horizontal">
+              <span class="icon">⇄</span><span class="label">Flip H</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="flip-v" title="Flip Vertical">
+              <span class="icon">⇅</span><span class="label">Flip V</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="rotate-90" title="Rotate 90°">
+              <span class="icon">↻</span><span class="label">Rotate 90°</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alignment Tools -->
+        <div class="drawer-section">
+          <h4>Alignment</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="align-left" title="Align Left">
+              <span class="icon">⫷</span><span class="label">Left</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="align-center" title="Align Center">
+              <span class="icon">⫼</span><span class="label">Center</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="align-right" title="Align Right">
+              <span class="icon">⫸</span><span class="label">Right</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="offset" title="Offset Path">
+              <span class="icon">⊚</span><span class="label">Offset</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="contour" title="Contour">
+              <span class="icon">◎</span><span class="label">Contour</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Path Operations -->
+        <div class="drawer-section">
+          <h4>Path Operations</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="bezier-editor" title="Bezier Curve Editor">
+              <span class="icon">✎</span><span class="label">Bezier</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="path-simplify" title="Simplify Path">
+              <span class="icon">⌄</span><span class="label">Simplify</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="path-union" title="Union Paths">
+              <span class="icon">⊔</span><span class="label">Union</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="path-subtract" title="Subtract Paths">
+              <span class="icon">⊖</span><span class="label">Subtract</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="path-intersect" title="Intersect Paths">
+              <span class="icon">∩</span><span class="label">Intersect</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="create-outline" title="Create Outline">
+              <span class="icon">◻</span><span class="label">Outline</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="merge-paths" title="Merge Paths">
+              <span class="icon">⟷</span><span class="label">Merge</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="break-apart" title="Break Apart">
+              <span class="icon">✕</span><span class="label">Break Apart</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Tools -->
+        <div class="drawer-section">
+          <h4>Text Tools</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="font-manager" title="Font Manager">
+              <span class="icon">🔤</span><span class="label">Fonts</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="text-on-path" title="Text on Path">
+              <span class="icon">↷</span><span class="label">On Path</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="text-to-path" title="Text to Path">
+              <span class="icon">∋</span><span class="label">To Path</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="font-style" title="Font Styling">
+              <span class="icon">𝐀</span><span class="label">Styling</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="letter-spacing" title="Letter Spacing">
+              <span class="icon">↔</span><span class="label">Spacing</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="text-overflow" title="Text Overflow">
+              <span class="icon">⊟</span><span class="label">Overflow</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Transform Tools -->
+        <div class="drawer-section">
+          <h4>Transform</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="skew" title="Skew/Shear">
+              <span class="icon">⫷⫸</span><span class="label">Skew</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="perspective" title="Perspective Transform">
+              <span class="icon">▨</span><span class="label">Perspective</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="mirror-advanced" title="Mirror Advanced">
+              <span class="icon">⟷</span><span class="label">Mirror</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="scale-constrain" title="Scale with Constraints">
+              <span class="icon">↔↕</span><span class="label">Scale</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="stretch" title="Stretch & Squeeze">
+              <span class="icon">◊</span><span class="label">Stretch</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="3d-rotation" title="3D Rotation Preview">
+              <span class="icon">↺</span><span class="label">3D</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="corner-adjust" title="Corner Adjustment">
+              <span class="icon">⨭</span><span class="label">Corners</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Color & Fill -->
+        <div class="drawer-section">
+          <h4>Color & Fill</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="gradient-editor" title="Gradient Editor">
+              <span class="icon">▤</span><span class="label">Gradient</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="pattern-fill" title="Pattern Fill Creator">
+              <span class="icon">▦</span><span class="label">Pattern</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="color-harmony" title="Color Harmonies">
+              <span class="icon">◉</span><span class="label">Harmony</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="opacity" title="Opacity/Alpha Channel">
+              <span class="icon">◎</span><span class="label">Opacity</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="cmyk-separation" title="Color Separation">
+              <span class="icon">⊙</span><span class="label">CMYK Sep</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Selection Tools -->
+        <div class="drawer-section">
+          <h4>Advanced Selection</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="select-color" title="Select by Color">
+              <span class="icon">🎨</span><span class="label">By Color</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="select-size" title="Select by Size">
+              <span class="icon">📏</span><span class="label">By Size</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="select-similar" title="Select Similar">
+              <span class="icon">≈</span><span class="label">Similar</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="select-inverse" title="Select Inverse">
+              <span class="icon">⊘</span><span class="label">Inverse</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+
+        <!-- Quick Properties -->
+        <div class="drawer-section">
+          <h4>Quick Properties</h4>
+          <div class="property-quick">
+            <p style="color: #888; font-size: 12px; margin: 10px 0;">Select an object to edit properties</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

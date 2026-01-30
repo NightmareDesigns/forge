@@ -74,6 +74,9 @@ body {
   border-right: 1px solid var(--border);
   grid-column: 1;
   grid-row: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(100vh - 80px);
 }
 
 .tool-group {
@@ -774,6 +777,73 @@ body {
 
 .right-drawer-content {
   padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+}
+
+/* Drawer Sections */
+.drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-section h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Tool Grid in Drawer */
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tool-btn-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px;
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.15s ease;
+  min-height: 70px;
+}
+
+.tool-btn-grid:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.tool-btn-grid .label {
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Property Quick Section */
+.property-quick {
+  padding: 10px;
+  background: var(--bg-light);
+  border-radius: 4px;
+  border: 1px solid var(--border);
 }
 
 /* Panel Sections */

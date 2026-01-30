@@ -131,6 +131,47 @@ app.post('/search', async (req, res) => {
   }
 });
 
+// Chat endpoint for key generator and general assistant
+app.post('/chat', async (req, res) => {
+  const { message, context } = req.body || {};
+  if (!message) return res.status(400).json({ error: 'message required' });
+
+  try {
+    const contextInfo = context ? `\n\nContext: ${JSON.stringify(context)}` : '';
+    const systemPrompt = `You are a helpful CraftForge AI assistant. Answer questions about license keys, software features, and provide technical support. Be concise and friendly.${contextInfo}`;
+    
+    try {
+      const response = await axios.post(`${OLLAMA_HOST}/api/generate`, {
+        model: MODEL,
+        prompt: `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`,
+        stream: false,
+        temperature: 0.7
+      });
+
+      const reply = response.data.response || 'I apologize, but I could not generate a response.';
+      res.json({ reply: reply.trim() });
+    } catch (ollama_err) {
+      // Fallback response
+      let reply = "I'm here to help! ";
+      const msg = message.toLowerCase();
+      
+      if (msg.includes('key') || msg.includes('license')) {
+        reply += "CraftForge uses 16-character license keys (XXXX-XXXX-XXXX-XXXX). Keys are machine-locked and include a 30-day trial.";
+      } else if (msg.includes('feature') || msg.includes('what can')) {
+        reply += "CraftForge has AI design generation, 20+ tools, image tracing, and supports Cricut/HPGL devices.";
+      } else if (msg.includes('price') || msg.includes('cost')) {
+        reply += "CraftForge Professional is $79.99 one-time payment via CashApp ($NGTMRE1).";
+      } else {
+        reply += "I can help with license keys, software features, pricing, and technical support. What would you like to know?";
+      }
+      
+      res.json({ reply, note: 'Using fallback - install Ollama for full AI chat' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Chat failed', detail: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`CraftForge AI server listening on ${PORT}`);
   console.log(`Using local Ollama model: ${MODEL}`);
