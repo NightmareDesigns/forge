@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:*; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:">
-  <title>Nightmare Designs Forge</title>
+  <title>Nightmare Designs SVG Forge v0.1.0 - Professional SVG Design & Cutting Software</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="logo.css">
   <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
@@ -13,8 +13,12 @@
   <div id="app">
     <!-- Logo Header -->
     <header id="app-header">
+      <a href="https://www.nightmaredesigns.org/" target="_blank" class="logo-link" title="Visit Nightmare Designs">
+        <img src="../../assets/icons/grim-reaper-logo.png" class="grim-reaper-logo" title="Nightmare Designs" />
+      </a>
       <div class="logo-container logo-compact">
-        <span class="nightmare-logo glow">Nightmare Designs Forge</span>
+        <span class="nightmare-logo glow">Nightmare Designs SVG Forge</span>
+        <span class="software-version">v0.1.0</span>
         <div class="blood-drips">
           <div class="drip"></div>
           <div class="drip"></div>
@@ -31,6 +35,14 @@
       <button id="toggle-right-panel" class="tool-btn" title="Properties" style="margin-right:8px">☰</button>
       <a href="https://nightmaredesigns.org" target="_blank" class="header-link">nightmaredesigns.org</a>
     </header>
+
+    <!-- Gallery Full Page Modal -->
+    <div id="gallery-modal" class="gallery-modal" style="display: none;">
+      <div class="gallery-modal-content">
+        <button id="gallery-modal-close" class="gallery-modal-close">✕</button>
+        <div id="gallery-modal-grid" class="gallery-modal-grid"></div>
+      </div>
+    </div>
 
     <!-- Left Toolbar (Scrollable) -->
     <aside id="toolbar">
@@ -73,6 +85,9 @@
         <button class="tool-btn" data-tool="trace" title="Image Trace">
           <span class="icon">⊡</span>
         </button>
+        <button class="tool-btn" data-tool="color-vector" title="Color Vector - Click color to trace">
+          <span class="icon">🎯</span>
+        </button>
         <button class="tool-btn" data-tool="color-picker" title="Color Picker (X)">
           <span class="icon">🎨</span>
         </button>
@@ -90,10 +105,10 @@
         <div class="panel-section">
           <h4>Import & Trace</h4>
           <div class="tool-row">
-            <button id="import-image-btn" class="tool-btn-panel" style="background: #6c5ce7; width: 100%">📁 Import Image</button>
+            <button id="import-image-btn" class="tool-btn-panel" style="width: 100%">📁 Import Image</button>
           </div>
           <div class="tool-row">
-            <button id="trace-image-btn" class="tool-btn-panel" style="background: #a29bfe; width: 100%">✨ Trace to SVG</button>
+            <button id="trace-image-btn" class="tool-btn-panel" style="width: 100%">✨ Trace to SVG</button>
           </div>
           <input type="file" id="image-input" accept="image/*" style="display: none;">
         </div>
@@ -119,19 +134,19 @@
             <span id="eraser-size-val">10</span>
           </div>
           <div class="tool-row">
-            <button class="tool-quick" data-tool="brush" style="background: #4a90e2">Brush</button>
+            <button class="tool-quick" data-tool="brush">Brush</button>
           </div>
           <div class="tool-row">
-            <button class="tool-quick" data-tool="marker" style="background: #f5a623">Marker</button>
+            <button class="tool-quick" data-tool="marker">Marker</button>
           </div>
           <div class="tool-row">
-            <button class="tool-quick" data-tool="eraser" style="background: #999">Eraser</button>
+            <button class="tool-quick" data-tool="eraser">Eraser</button>
           </div>
           <div class="tool-row">
-            <button class="tool-quick" data-tool="pen" style="background: #7ed321">Pen</button>
+            <button class="tool-quick" data-tool="pen">Pen</button>
           </div>
           <div class="tool-row">
-            <button class="tool-quick" data-tool="color-picker" style="background: #ff6b6b">Color Picker</button>
+            <button class="tool-quick" data-tool="color-picker">Color Picker</button>
           </div>
         </div>
 
@@ -139,20 +154,38 @@
 
         <!-- AI Search Section -->
         <div class="panel-section">
-          <h4>AI Design Search</h4>
+          <h4>SVG Search</h4>
           <div class="tool-row">
-            <input type="text" id="ai-search-input" placeholder="Search designs..." class="ai-input">
+            <input type="text" id="ai-search-input" placeholder="Search SVG designs..." class="ai-input">
           </div>
           <div class="tool-row">
-            <button id="ai-search-btn" class="tool-btn-panel" style="background: #00b894; width: 100%">🔍 Search</button>
-          </div>
-          <div class="tool-row">
-            <input type="text" id="ai-generate-input" placeholder="Generate from prompt..." class="ai-input">
-          </div>
-          <div class="tool-row">
-            <button id="ai-generate-btn" class="tool-btn-panel" style="background: #fd79a8; width: 100%">🎨 Generate</button>
+            <button id="ai-search-btn" class="tool-btn-panel" style="width: 100%">🔍 Search</button>
           </div>
           <div id="ai-status" class="ai-status" style="display: none;"></div>
+          <div id="ai-results" class="ai-results" style="display: none;"></div>
+        </div>
+
+        <div class="tool-divider"></div>
+
+        <!-- Saved SVG Files Section -->
+        <div class="panel-section">
+          <h4>Saved SVG Files</h4>
+          <div id="saved-svgs" class="svg-gallery" style="margin-bottom: 8px;"></div>
+          <button id="load-svgs-btn" class="tool-btn-panel" style="width: 100%">📂 Load SVG Files</button>
+        </div>
+
+        <div class="tool-divider"></div>
+
+        <!-- Design Assistant Section -->
+        <div class="panel-section">
+          <h4>Design Assistant</h4>
+          <div id="assistant-chat" class="assistant-chat"></div>
+          <div class="tool-row">
+            <input type="text" id="assistant-input" placeholder="Ask about tools, materials, tips..." class="ai-input">
+          </div>
+          <div class="tool-row">
+            <button id="assistant-send-btn" class="tool-btn-panel" style="width: 100%">💬 Ask</button>
+          </div>
         </div>
       </div>
     </div>
@@ -292,7 +325,7 @@
     </aside>
 
     <!-- Right Slide-Out Drawer (All Tools) -->
-    <div id="right-drawer" class="right-drawer" aria-hidden="true">
+    <div id="right-drawer" class="right-drawer" aria-hidden="true" inert>
       <div class="right-drawer-header">
         <h3>Tools & Settings</h3>
         <button id="close-right-drawer" class="close-btn">×</button>
@@ -492,6 +525,22 @@
           </div>
         </div>
 
+        <!-- SVG Optimization -->
+        <div class="drawer-section">
+          <h4>SVG Optimizer</h4>
+          <div class="tool-grid">
+            <button class="tool-btn-grid" data-tool="svg-optimize" title="Optimize Selected SVG">
+              <span class="icon">⚡</span><span class="label">Optimize</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="svg-simplify" title="Simplify Paths">
+              <span class="icon">⌄</span><span class="label">Simplify</span>
+            </button>
+            <button class="tool-btn-grid" data-tool="svg-clean" title="Clean SVG Code">
+              <span class="icon">🧹</span><span class="label">Clean</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Divider -->
         <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
 
@@ -557,6 +606,170 @@
       <div class="modal-footer">
         <button id="trace-preview-btn" class="btn">Preview</button>
         <button id="trace-apply-btn" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Font Manager Dialog -->
+  <div id="font-manager-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Font Manager</h2>
+        <button class="modal-close" id="close-font-manager">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="font-manager-content">
+          <div class="font-list">
+            <h4>Available Fonts</h4>
+            <div id="font-list-container" style="max-height: 300px; overflow-y: auto; border: 1px solid #444; padding: 10px;">
+              <p style="color: #888;">Loading fonts...</p>
+            </div>
+          </div>
+          <div class="font-preview">
+            <h4>Preview</h4>
+            <input type="text" id="font-preview-text" placeholder="Enter preview text" value="Sample Text" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <div id="font-preview" style="background: #1a1a1a; padding: 20px; border: 1px solid #444; min-height: 80px; color: #ccc;">Sample Text</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="font-manager-close-btn" class="btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bezier Editor Dialog -->
+  <div id="bezier-editor-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Bezier Curve Editor</h2>
+        <button class="modal-close" id="close-bezier-editor">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="bezier-editor-content">
+          <p style="color: #aaa; margin-bottom: 15px;">Select a path to edit its control points. Drag control points to adjust the curve.</p>
+          <div style="border: 1px solid #444; padding: 10px; margin-bottom: 10px;">
+            <label><input type="checkbox" id="bezier-show-handles"> Show handles</label>
+            <label><input type="checkbox" id="bezier-show-points" checked> Show control points</label>
+          </div>
+          <div>
+            <h4>Curve Type</h4>
+            <select id="bezier-curve-type" style="width: 100%; padding: 8px;">
+              <option value="cubic">Cubic Bezier</option>
+              <option value="quadratic">Quadratic Bezier</option>
+              <option value="straight">Straight Line</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="bezier-reset-btn" class="btn">Reset</button>
+        <button id="bezier-apply-btn" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text on Path Dialog -->
+  <div id="text-on-path-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Text on Path</h2>
+        <button class="modal-close" id="close-text-on-path">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="text-on-path-content">
+          <div class="option-row">
+            <label>Text:</label>
+            <input type="text" id="text-on-path-input" placeholder="Enter text" value="Sample Text">
+          </div>
+          <div class="option-row">
+            <label>Font:</label>
+            <select id="text-on-path-font">
+              <option>Arial</option>
+              <option>Helvetica</option>
+              <option>Times New Roman</option>
+            </select>
+          </div>
+          <div class="option-row">
+            <label>Size:</label>
+            <input type="number" id="text-on-path-size" value="16" min="1">
+          </div>
+          <div class="option-row">
+            <label><input type="checkbox" id="text-on-path-reverse"> Reverse direction</label>
+          </div>
+          <div class="option-row">
+            <label>Offset:</label>
+            <input type="range" id="text-on-path-offset" min="-100" max="100" value="0">
+            <span id="offset-value">0</span>%
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="text-on-path-preview-btn" class="btn">Preview</button>
+        <button id="text-on-path-apply-btn" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text to Path Dialog -->
+  <div id="text-to-path-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Convert Text to Path</h2>
+        <button class="modal-close" id="close-text-to-path">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="text-to-path-content">
+          <p style="color: #aaa; margin-bottom: 15px;">This will convert the selected text object(s) into editable path(s). The text will no longer be editable as text.</p>
+          <div style="border: 1px solid #444; padding: 10px;">
+            <label><input type="checkbox" id="text-to-path-ungroup"> Ungroup letters</label>
+            <label><input type="checkbox" id="text-to-path-remove-fill"> Remove fill (keep stroke)</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="text-to-path-cancel-btn" class="btn">Cancel</button>
+        <button id="text-to-path-confirm-btn" class="btn btn-primary">Convert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Vector Dialog -->
+  <div id="color-vector-dialog" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Color Vector</h2>
+        <button class="modal-close" id="close-color-vector">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="color-vector-content">
+          <p style="color: #aaa; margin-bottom: 15px;">Click on a color in the image to trace it. Only that color will be vectorized.</p>
+          <div style="border: 1px solid #444; padding: 15px; margin-bottom: 15px; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; background: #1a1a1a;">
+            <canvas id="color-vector-canvas" style="max-width: 100%; max-height: 150px; cursor: crosshair;"></canvas>
+          </div>
+          <div style="border: 1px solid #666; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span>Selected Color:</span>
+              <div id="color-vector-preview" style="width: 40px; height: 40px; border: 1px solid #888; border-radius: 4px; background: #fff;"></div>
+              <span id="color-vector-hex" style="color: #aaa; font-family: monospace;">#000000</span>
+            </div>
+          </div>
+          <div class="option-row">
+            <label>Trace Detail:</label>
+            <select id="color-vector-detail">
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="option-row">
+            <label><input type="checkbox" id="color-vector-smooth" checked> Smooth paths</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="color-vector-clear-btn" class="btn">Clear Selection</button>
+        <button id="color-vector-apply-btn" class="btn btn-primary" disabled>Apply Vector</button>
       </div>
     </div>
   </div>

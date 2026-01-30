@@ -8,7 +8,7 @@
 
 .nightmare-logo {
   font-family: 'Creepster', 'Chiller', 'Impact', sans-serif;
-  font-size: 28px;
+  font-size: 56px;
   font-weight: bold;
   color: #8B0000;
   text-shadow: 
@@ -23,7 +23,7 @@
 }
 
 .nightmare-logo::before {
-  content: 'NIGHTMARE DESIGNS FORGE';
+  content: 'NIGHTMARE DESIGNS SVG FORGE';
   position: absolute;
   top: 0;
   left: 0;

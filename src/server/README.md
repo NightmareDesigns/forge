@@ -1,4 +1,4 @@
-CraftForge AI Server
+Nightmare Designs SVG Forge AI Server
 
 This lightweight server provides two endpoints to support the desktop app:
 

@@ -1,4 +1,4 @@
-# 🩸 Nightmare Designs Forge
+# 🩸 Nightmare Designs SVG Forge
 
 **[nightmaredesigns.org](https://nightmaredesigns.org)**
 
@@ -49,7 +49,7 @@ npm run build
 ## Project Structure
 
 ```
-CraftForge/
+Nightmare-Designs-SVG-Forge/
 ├── src/
 │   ├── main.js           # Electron main process
 │   ├── preload.js        # Secure IPC bridge

@@ -4,11 +4,52 @@ const { createDeviceManager } = require('./devices');
 const Vectorizer = require('./utils/vectorize');
 const { validateFilePath, validateDeviceInfo, validateCutJob, validateTraceOptions, handleSecureError } = require('./security');
 const LicenseManager = require('./licensing');
+const fs = require('fs');
+const { spawn } = require('child_process');
 
 let mainWindow;
 let deviceManager;
 let vectorizer;
 let licenseManager;
+let aiServerProcess;
+
+// Start AI server in background
+function startAiServer() {
+  try {
+    const serverPath = path.join(__dirname, 'server', 'server.js');
+    const nodeCandidates = [
+      process.env.NODE_BINARY,
+      'C:\\Program Files\\nodejs\\node.exe',
+      'C:\\Program Files (x86)\\nodejs\\node.exe'
+    ].filter(Boolean);
+
+    let nodeBinary = nodeCandidates.find(candidate => fs.existsSync(candidate));
+    if (!nodeBinary) {
+      nodeBinary = 'node';
+    }
+
+    aiServerProcess = spawn(nodeBinary, [serverPath], {
+      stdio: 'pipe',
+      detached: false
+    });
+    
+    aiServerProcess.stdout.on('data', (data) => {
+      console.log(`[AI Server] ${data.toString().trim()}`);
+    });
+    
+    aiServerProcess.stderr.on('data', (data) => {
+      console.error(`[AI Server Error] ${data.toString().trim()}`);
+    });
+    
+    aiServerProcess.on('close', (code) => {
+      console.log(`[AI Server] Process exited with code ${code}`);
+    });
+    
+    console.log(`[AI Server] Started on port 4000 using ${nodeBinary}`);
+  } catch (error) {
+    console.error('[AI Server] Failed to start:', error.message);
+  }
+}
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -154,8 +195,8 @@ async function handleImportSVG() {
 function showAbout() {
   dialog.showMessageBox(mainWindow, {
     type: 'info',
-    title: 'About Nightmare Designs Forge',
-    message: '🩸 Nightmare Designs Forge v0.1.0',
+    title: 'About Nightmare Designs SVG Forge',
+    message: '🩸 Nightmare Designs SVG Forge v0.1.0',
     detail: 'A powerful design and cutting software.\nMore tools. More options. Complete creative freedom.\n\nForged in darkness, cut with precision.\n\nhttps://nightmaredesigns.org'
   });
 }
@@ -181,6 +222,9 @@ app.whenReady().then(() => {
   
   deviceManager = createDeviceManager();
   vectorizer = new Vectorizer();
+  
+  // Start AI server
+  startAiServer();
   
   // Device manager events
   deviceManager.on('device-connected', (data) => {
@@ -217,6 +261,13 @@ app.on('window-all-closed', async () => {
   if (deviceManager) {
     await deviceManager.disconnectAll();
   }
+  
+  // Kill AI server
+  if (aiServerProcess) {
+    aiServerProcess.kill();
+    console.log('[AI Server] Stopped');
+  }
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -337,6 +388,18 @@ function setupIPC() {
       return await vectorizer.preprocessImage(validatedPath, validatedOptions);
     } catch (err) {
       throw new Error(handleSecureError(err, 'preprocess-image'));
+    }
+  });
+
+  ipcMain.handle('trace-color-only', async (event, imagePath, colorHex, options) => {
+    try {
+      // Allow data URLs (base64 encoded images) to pass through without path validation
+      const validatedPath = imagePath.startsWith('data:') ? imagePath : validateFilePath(imagePath);
+      const validatedOptions = validateTraceOptions(options);
+      // colorHex comes as #RRGGBB
+      return await vectorizer.traceColorOnly(validatedPath, colorHex, validatedOptions);
+    } catch (err) {
+      throw new Error(handleSecureError(err, 'trace-color-only'));
     }
   });
   

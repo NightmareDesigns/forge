@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master License List - CraftForge</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0d0000 0%, #1a0000 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #cccccc;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 36px;
+      color: #8b0000;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 28px;
+      color: #8b0000;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: #8b0000;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #a00000;
+      transform: translateY(-2px);
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid #8b0000;
+      color: #8b0000;
+    }
+
+    .btn.secondary:hover {
+      background: rgba(139, 0, 0, 0.1);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid #8b0000;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #8b0000;
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px;
+      background: rgba(50, 50, 50, 0.5);
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #cccccc;
+      font-size: 14px;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #8b0000;
+      background: rgba(50, 50, 50, 0.8);
+    }
+
+    .table-container {
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid #8b0000;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(139, 0, 0, 0.2);
+      border-bottom: 1px solid #8b0000;
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      color: #8b0000;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #333;
+      font-size: 13px;
+    }
+
+    tr:hover {
+      background: rgba(139, 0, 0, 0.05);
+    }
+
+    .status-active {
+      color: #00c853;
+      font-weight: 600;
+    }
+
+    .status-inactive {
+      color: #ff6f00;
+      font-weight: 600;
+    }
+
+    .status-expired {
+      color: #d32f2f;
+      font-weight: 600;
+    }
+
+    .copy-btn {
+      background: rgba(139, 0, 0, 0.2);
+      border: none;
+      color: #8b0000;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(139, 0, 0, 0.4);
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 3px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .success {
+      background: rgba(0, 200, 83, 0.2);
+      color: #69f0ae;
+      border: 1px solid #00c853;
+    }
+
+    .error {
+      background: rgba(211, 47, 47, 0.2);
+      color: #ff5252;
+      border: 1px solid #d32f2f;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .export-menu {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 11px;
+      }
+
+      th, td {
+        padding: 8px 10px;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🎨 CraftForge</div>
+      <div class="title">Master License List</div>
+      <div class="subtitle">Software Numbers & License Keys</div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="controls">
+      <button class="btn" onclick="loadAndDisplayList()">🔄 Refresh</button>
+      <div class="export-menu">
+        <button class="btn secondary" onclick="exportList('json')">📥 JSON</button>
+        <button class="btn secondary" onclick="exportList('csv')">📥 CSV</button>
+        <button class="btn secondary" onclick="exportList('txt')">📥 Text</button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by software number, email, or customer name..." onkeyup="filterTable()">
+    </div>
+
+    <div class="table-container">
+      <table id="licenseTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Software Number</th>
+            <th>License Key</th>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>License Type</th>
+            <th>Status</th>
+            <th>Days Left</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 40px;">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let allLicenses = [];
+
+    async function loadAndDisplayList() {
+      try {
+        // Load from server
+        const response = await fetch('/api/license-list');
+        if (!response.ok) {
+          showMessage('Could not load license list from server', 'error');
+          return;
+        }
+
+        const data = await response.json();
+        allLicenses = data.licenses || [];
+
+        displayStats(data.stats);
+        displayTable(allLicenses);
+        showMessage(`Loaded ${allLicenses.length} licenses`, 'success');
+      } catch (error) {
+        showMessage(`Error: ${error.message}`, 'error');
+      }
+    }
+
+    function displayStats(stats) {
+      if (!stats) return;
+
+      const statsDiv = document.getElementById('stats');
+      statsDiv.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">Total Licenses</div>
+          <div class="stat-value">${stats.totalLicenses}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active</div>
+          <div class="stat-value" style="color: #00c853;">${stats.activeLicenses}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Inactive</div>
+          <div class="stat-value" style="color: #ff6f00;">${stats.inactiveLicenses}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Expired</div>
+          <div class="stat-value" style="color: #d32f2f;">${stats.expiredLicenses}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Expiring Soon (30d)</div>
+          <div class="stat-value">${stats.expiringWithinMonth}</div>
+        </div>
+      `;
+    }
+
+    function displayTable(licenses) {
+      const tbody = document.getElementById('tableBody');
+
+      if (licenses.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="no-results">No licenses found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = licenses.map((license, idx) => {
+        let statusClass = 'status-active';
+        let statusText = '✓ Active';
+
+        if (license.daysRemaining < 0) {
+          statusClass = 'status-expired';
+          statusText = '✗ Expired';
+        } else if (license.daysRemaining < 30) {
+          statusClass = 'status-inactive';
+          statusText = '⚠ Expiring';
+        }
+
+        return `
+          <tr>
+            <td>${idx + 1}</td>
+            <td><code style="background: rgba(139,0,0,0.1); padding: 2px 6px; border-radius: 3px;">${license.softwareNumber}</code></td>
+            <td>
+              <code style="background: rgba(139,0,0,0.1); padding: 2px 6px; border-radius: 3px; display: block; margin-bottom: 5px; word-break: break-all;">
+                ${license.licenseKey}
+              </code>
+              <button class="copy-btn" onclick="copyToClipboard('${license.licenseKey}')">Copy</button>
+            </td>
+            <td>${license.customerName}</td>
+            <td>${license.email}</td>
+            <td>${license.licenseType}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td>${license.daysRemaining < 0 ? 'Expired' : license.daysRemaining + 'd'}</td>
+            <td>
+              <button class="copy-btn" onclick="copyPair('${license.softwareNumber}', '${license.licenseKey}')">Copy Pair</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterTable() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const tbody = document.getElementById('tableBody');
+      const rows = tbody.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+      });
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showMessage('Copied to clipboard!', 'success');
+      });
+    }
+
+    function copyPair(softwareNumber, licenseKey) {
+      const text = `Software Number: ${softwareNumber}\nLicense Key: ${licenseKey}`;
+      navigator.clipboard.writeText(text).then(() => {
+        showMessage('License pair copied!', 'success');
+      });
+    }
+
+    async function exportList(format) {
+      try {
+        const endpoint = `/api/export-license-list?format=${format}`;
+        const response = await fetch(endpoint);
+
+        if (!response.ok) {
+          showMessage(`Export failed: ${response.statusText}`, 'error');
+          return;
+        }
+
+        // Get filename from header or use default
+        let filename = `master-license-list.${format}`;
+        const contentDisposition = response.headers.get('content-disposition');
+        if (contentDisposition) {
+          const match = contentDisposition.match(/filename="(.+)"/);
+          if (match) filename = match[1];
+        }
+
+        // Download
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showMessage(`Exported as ${format.toUpperCase()}`, 'success');
+      } catch (error) {
+        showMessage(`Export error: ${error.message}`, 'error');
+      }
+    }
+
+    function showMessage(text, type = 'success') {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = `message show ${type}`;
+      setTimeout(() => msg.classList.remove('show'), 3000);
+    }
+
+    // Load on page load
+    window.addEventListener('load', loadAndDisplayList);
+  </script>
+</body>
+</html>

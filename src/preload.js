@@ -58,6 +58,7 @@ contextBridge.exposeInMainWorld('craftforge', {
   // Vectorization/Trace operations
   selectImageForTrace: () => ipcRenderer.invoke('select-image-for-trace'),
   traceImage: (imagePath, options) => ipcRenderer.invoke('trace-image', imagePath, options),
+  traceColorOnly: (imagePath, colorHex, options) => ipcRenderer.invoke('trace-color-only', imagePath, colorHex, options),
   posterizeImage: (imagePath, steps, options) => ipcRenderer.invoke('posterize-image', imagePath, steps, options),
   preprocessImage: (imagePath, options) => ipcRenderer.invoke('preprocess-image', imagePath, options),
   

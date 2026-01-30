@@ -36,6 +36,12 @@ class CraftForgeApp {
     // Image import state
     this.currentImagePath = null;
     this.currentImage = null;
+
+    // Panel pin/hover state
+    this.isToolPanelPinned = false;
+    this.isRightDrawerPinned = false;
+    this.toolPanelCloseTimer = null;
+    this.rightDrawerCloseTimer = null;
     
     this.init();
   }
@@ -48,6 +54,7 @@ class CraftForgeApp {
     this.setupMenuHandlers();
     this.setupDeviceHandlers();
     this.setupTraceHandlers();
+    this.setupDialogHandlers();
     this.render();
     this.updateStatus('Ready - Create something amazing!');
   }
@@ -93,6 +100,16 @@ class CraftForgeApp {
     document.getElementById('add-layer').addEventListener('click', () => this.addLayer());
     document.getElementById('delete-layer').addEventListener('click', () => this.deleteLayer());
 
+    // Gallery modal close
+    const galleryCloseBtn = document.getElementById('gallery-modal-close');
+    galleryCloseBtn?.addEventListener('click', () => this.closeFullPageGallery());
+    const galleryModal = document.getElementById('gallery-modal');
+    galleryModal?.addEventListener('click', (e) => {
+      if (e.target === galleryModal) {
+        this.closeFullPageGallery();
+      }
+    });
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => this.handleKeyboard(e));
   }
@@ -103,7 +120,104 @@ class CraftForgeApp {
     togglePanelBtn?.addEventListener('click', () => this.toggleToolPanel());
     // Right properties drawer toggle
     const toggleRightBtn = document.getElementById('toggle-right-panel');
-    toggleRightBtn?.addEventListener('click', () => this.toggleRightPanel());
+    toggleRightBtn?.addEventListener('click', () => {
+      this.isRightDrawerPinned = !this.isRightDrawerPinned;
+      if (this.isRightDrawerPinned) {
+        this.openRightDrawer(true);
+        toggleRightBtn.classList.add('active');
+      } else {
+        this.closeRightDrawer(true);
+        toggleRightBtn.classList.remove('active');
+      }
+    });
+
+    // Hover-open side panels (when not pinned)
+    const toolbar = document.getElementById('toolbar');
+    const toolPanel = document.getElementById('tool-panel');
+    const rightDrawer = document.getElementById('right-drawer');
+
+    const clearToolPanelTimer = () => {
+      if (this.toolPanelCloseTimer) {
+        clearTimeout(this.toolPanelCloseTimer);
+        this.toolPanelCloseTimer = null;
+      }
+    };
+    const clearRightDrawerTimer = () => {
+      if (this.rightDrawerCloseTimer) {
+        clearTimeout(this.rightDrawerCloseTimer);
+        this.rightDrawerCloseTimer = null;
+      }
+    };
+
+    const scheduleToolPanelClose = () => {
+      clearToolPanelTimer();
+      this.toolPanelCloseTimer = setTimeout(() => {
+        if (!this.isToolPanelPinned) {
+          this.closeToolPanel();
+        }
+      }, 200);
+    };
+
+    const scheduleRightDrawerClose = () => {
+      clearRightDrawerTimer();
+      this.rightDrawerCloseTimer = setTimeout(() => {
+        if (!this.isRightDrawerPinned) {
+          this.closeRightDrawer();
+        }
+      }, 200);
+    };
+
+    toolbar?.addEventListener('mouseenter', () => {
+      clearToolPanelTimer();
+      if (!this.isToolPanelPinned) {
+        this.openToolPanel();
+      }
+    });
+    toolbar?.addEventListener('mouseleave', () => {
+      if (!this.isToolPanelPinned) {
+        scheduleToolPanelClose();
+      }
+    });
+    toolPanel?.addEventListener('mouseenter', () => {
+      clearToolPanelTimer();
+      if (!this.isToolPanelPinned) {
+        this.openToolPanel();
+      }
+    });
+    toolPanel?.addEventListener('mouseleave', () => {
+      if (!this.isToolPanelPinned) {
+        scheduleToolPanelClose();
+      }
+    });
+
+    toggleRightBtn?.addEventListener('mouseenter', () => {
+      clearRightDrawerTimer();
+      if (!this.isRightDrawerPinned) {
+        this.openRightDrawer();
+      }
+    });
+    rightDrawer?.addEventListener('mouseenter', () => {
+      clearRightDrawerTimer();
+      if (!this.isRightDrawerPinned) {
+        this.openRightDrawer();
+      }
+    });
+    rightDrawer?.addEventListener('mouseleave', () => {
+      if (!this.isRightDrawerPinned) {
+        scheduleRightDrawerClose();
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (this.isRightDrawerPinned) return;
+      const edge = window.innerWidth - 10;
+      if (e.clientX >= edge) {
+        clearRightDrawerTimer();
+        this.openRightDrawer();
+      } else if (!rightDrawer?.matches(':hover') && !toggleRightBtn?.matches(':hover')) {
+        scheduleRightDrawerClose();
+      }
+    });
     
     // Handle both left toolbar buttons and right drawer grid buttons
     const allToolButtons = document.querySelectorAll('.tool-btn[data-tool], .tool-btn-grid[data-tool]');
@@ -126,6 +240,43 @@ class CraftForgeApp {
             return;
           }
           this.openTraceDialog();
+          return;
+        }
+
+        // Special handling for color vector tool - click to select color
+        if (tool === 'color-vector') {
+          if (!this.currentImagePath) {
+            this.updateStatus('Please import an image first');
+            return;
+          }
+          this.openColorVectorDialog();
+          return;
+        }
+
+        // Shape drawing tools
+        if (tool === 'rectangle') {
+          this.selectTool('rectangle');
+          this.updateStatus('Rectangle tool: Click and drag to create');
+          return;
+        }
+        if (tool === 'circle') {
+          this.selectTool('circle');
+          this.updateStatus('Circle tool: Click and drag to create');
+          return;
+        }
+        if (tool === 'polygon') {
+          this.selectTool('polygon');
+          this.updateStatus('Polygon tool: Click and drag to create');
+          return;
+        }
+        if (tool === 'star') {
+          this.selectTool('star');
+          this.updateStatus('Star tool: Click and drag to create');
+          return;
+        }
+        if (tool === 'line') {
+          this.selectTool('line');
+          this.updateStatus('Line tool: Click and drag to create');
           return;
         }
 
@@ -169,7 +320,7 @@ class CraftForgeApp {
 
         // Path operations
         if (tool === 'bezier-editor') {
-          this.updateStatus('Bezier curve editor - Select paths to edit');
+          this.openBezierEditorDialog();
           return;
         }
         if (tool === 'path-simplify') {
@@ -215,15 +366,15 @@ class CraftForgeApp {
 
         // Text tools
         if (tool === 'font-manager') {
-          this.updateStatus('Font manager - Manage installed fonts');
+          this.openFontManagerDialog();
           return;
         }
         if (tool === 'text-on-path') {
-          this.updateStatus('Place text on a path');
+          this.openTextOnPathDialog();
           return;
         }
         if (tool === 'text-to-path') {
-          this.updateStatus('Convert text to editable path');
+          this.openTextToPathDialog();
           return;
         }
         if (tool === 'font-style') {
@@ -308,6 +459,20 @@ class CraftForgeApp {
           this.updateStatus('Invert selection');
           return;
         }
+
+        // SVG Optimizer tools
+        if (tool === 'svg-optimize') {
+          this.optimizeSvg();
+          return;
+        }
+        if (tool === 'svg-simplify') {
+          this.simplifySvg();
+          return;
+        }
+        if (tool === 'svg-clean') {
+          this.cleanSvg();
+          return;
+        }
         
         // Update active state for left toolbar buttons only
         document.querySelectorAll('.tool-btn.active').forEach(b => b.classList.remove('active'));
@@ -339,10 +504,14 @@ class CraftForgeApp {
     // AI features
     const searchBtn = document.getElementById('ai-search-btn');
     const searchInput = document.getElementById('ai-search-input');
-    const generateBtn = document.getElementById('ai-generate-btn');
-    const generateInput = document.getElementById('ai-generate-input');
+    const resultsEl = document.getElementById('ai-results');
 
-    closeBtn?.addEventListener('click', () => this.toggleToolPanel());
+    closeBtn?.addEventListener('click', () => {
+      this.isToolPanelPinned = false;
+      const togglePanelBtn = document.getElementById('toggle-panel');
+      togglePanelBtn?.classList.remove('active');
+      this.closeToolPanel(true);
+    });
 
     // Image import handler
     importBtn?.addEventListener('click', () => {
@@ -355,7 +524,37 @@ class CraftForgeApp {
         const reader = new FileReader();
         reader.onload = (event) => {
           this.currentImagePath = event.target?.result;
-          this.updateStatus('Image loaded. Click "Trace to SVG" to convert.');
+          
+          // Create an image object and add it to the canvas
+          const img = new Image();
+          img.onload = () => {
+            const maxWidth = this.canvas.width * 0.5;
+            const maxHeight = this.canvas.height * 0.5;
+            let width = img.width;
+            let height = img.height;
+            
+            // Scale to fit canvas if too large
+            if (width > maxWidth || height > maxHeight) {
+              const scale = Math.min(maxWidth / width, maxHeight / height);
+              width *= scale;
+              height *= scale;
+            }
+            
+            this.saveState();
+            this.objects.push({
+              type: 'image',
+              x: 50,
+              y: 50,
+              width: width,
+              height: height,
+              src: this.currentImagePath,
+              _imageElement: img,
+              rotation: 0
+            });
+            this.render();
+            this.updateStatus('Image placed on canvas. Click "Trace to SVG" to convert to vector.');
+          };
+          img.src = event.target?.result;
         };
         reader.readAsDataURL(file);
       }
@@ -369,7 +568,6 @@ class CraftForgeApp {
       }
       this.openTraceDialog();
     });
-
     // AI Search
     searchBtn?.addEventListener('click', async () => {
       const query = searchInput?.value.trim();
@@ -380,14 +578,36 @@ class CraftForgeApp {
       await this.aiSearch(query);
     });
 
-    // AI Generate
-    generateBtn?.addEventListener('click', async () => {
-      const prompt = generateInput?.value.trim();
-      if (!prompt) {
-        this.updateStatus('Enter a design prompt');
+    // AI Search - Enter key support
+    searchInput?.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput?.value.trim();
+        if (!query) {
+          this.updateStatus('Enter a search query');
+          return;
+        }
+        await this.aiSearch(query);
+      }
+    });
+
+    // Load saved SVG files
+    const loadSvgsBtn = document.getElementById('load-svgs-btn');
+    loadSvgsBtn?.addEventListener('click', () => this.loadSavedSvgs());
+
+    resultsEl?.addEventListener('click', async (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const btn = target.closest('.ai-result-btn');
+      if (!btn) return;
+      const url = btn.getAttribute('data-url');
+      if (!url) return;
+
+      if (btn.classList.contains('secondary')) {
+        window.open(url, '_blank', 'noopener,noreferrer');
         return;
       }
-      await this.aiGenerate(prompt);
+
+      await this.importSvgFromUrl(url);
     });
 
     brushSizeSlider?.addEventListener('input', (e) => {
@@ -415,27 +635,72 @@ class CraftForgeApp {
 
     // Right drawer close button
     const closeRightDrawerBtn = document.getElementById('close-right-drawer');
-    closeRightDrawerBtn?.addEventListener('click', () => this.toggleRightPanel());
+    closeRightDrawerBtn?.addEventListener('click', () => {
+      this.isRightDrawerPinned = false;
+      const toggleRightBtn = document.getElementById('toggle-right-panel');
+      toggleRightBtn?.classList.remove('active');
+      this.closeRightDrawer(true);
+    });
+
+    // Design Assistant
+    const assistantInput = document.getElementById('assistant-input');
+    const assistantSendBtn = document.getElementById('assistant-send-btn');
+    
+    assistantSendBtn?.addEventListener('click', async () => {
+      const message = assistantInput?.value.trim();
+      if (!message) return;
+      assistantInput.value = '';
+      await this.askAssistant(message);
+    });
+    
+    assistantInput?.addEventListener('keypress', async (e) => {
+      if (e.key === 'Enter') {
+        const message = assistantInput.value.trim();
+        if (!message) return;
+        assistantInput.value = '';
+        await this.askAssistant(message);
+      }
+    });
   }
 
   toggleToolPanel() {
-    const panel = document.getElementById('tool-panel');
-    panel?.classList.toggle('open');
+    this.isToolPanelPinned = !this.isToolPanelPinned;
+    const togglePanelBtn = document.getElementById('toggle-panel');
+    if (this.isToolPanelPinned) {
+      this.openToolPanel();
+      togglePanelBtn?.classList.add('active');
+    } else {
+      this.closeToolPanel(true);
+      togglePanelBtn?.classList.remove('active');
+    }
   }
 
-  toggleRightPanel() {
+  openToolPanel() {
+    const panel = document.getElementById('tool-panel');
+    panel?.classList.add('open');
+  }
+
+  closeToolPanel(force = false) {
+    if (this.isToolPanelPinned && !force) return;
+    const panel = document.getElementById('tool-panel');
+    panel?.classList.remove('open');
+  }
+
+  openRightDrawer() {
     const drawer = document.getElementById('right-drawer');
-
     if (!drawer) return;
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    drawer.removeAttribute('inert');
+  }
 
-    const isOpen = drawer.classList.contains('open');
-    if (isOpen) {
-      drawer.classList.remove('open');
-      drawer.setAttribute('aria-hidden', 'true');
-    } else {
-      drawer.classList.add('open');
-      drawer.setAttribute('aria-hidden', 'false');
-    }
+  closeRightDrawer(force = false) {
+    if (this.isRightDrawerPinned && !force) return;
+    const drawer = document.getElementById('right-drawer');
+    if (!drawer) return;
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.setAttribute('inert', '');
   }
 
   updateQuickProp(prop, value) {
@@ -641,6 +906,25 @@ class CraftForgeApp {
             this.ctx.stroke(p);
           } catch (err) {
             // no-op
+          }
+        }
+        break;
+      case 'image':
+        // Draw raster image
+        if (obj.src) {
+          try {
+            if (!obj._imageElement) {
+              const img = new Image();
+              img.src = obj.src;
+              obj._imageElement = img;
+              img.onload = () => this.render();
+            }
+            const img = obj._imageElement;
+            if (img.complete && img.naturalWidth !== 0) {
+              this.ctx.drawImage(img, obj.x, obj.y, obj.width, obj.height);
+            }
+          } catch (e) {
+            console.error('Failed to draw image:', e);
           }
         }
         break;
@@ -873,7 +1157,17 @@ class CraftForgeApp {
     if (e.key === '+' || e.key === '=') { e.preventDefault(); this.zoomIn(); }
     if (e.key === '-') { e.preventDefault(); this.zoomOut(); }
     if (e.key === ' ') { e.preventDefault(); this.isPanning = true; }
-    if (e.shiftKey && e.key === 'T') this.toggleToolPanel();
+    if (e.shiftKey && e.key === 'T') {
+      this.isToolPanelPinned = !this.isToolPanelPinned;
+      const togglePanelBtn = document.getElementById('toggle-panel');
+      if (this.isToolPanelPinned) {
+        this.openToolPanel();
+        togglePanelBtn?.classList.add('active');
+      } else {
+        this.closeToolPanel(true);
+        togglePanelBtn?.classList.remove('active');
+      }
+    }
   }
 
   // Tool operations
@@ -1721,6 +2015,131 @@ class CraftForgeApp {
     // Apply button
     applyBtn?.addEventListener('click', () => this.applyTrace());
   }
+
+  setupDialogHandlers() {
+    // Font Manager Dialog
+    const fontManagerDialog = document.getElementById('font-manager-dialog');
+    const closeFontManagerBtn = document.getElementById('close-font-manager');
+    const fontManagerCloseBtn = document.getElementById('font-manager-close-btn');
+    
+    closeFontManagerBtn?.addEventListener('click', () => {
+      fontManagerDialog.style.display = 'none';
+    });
+    fontManagerCloseBtn?.addEventListener('click', () => {
+      fontManagerDialog.style.display = 'none';
+    });
+
+    // Bezier Editor Dialog
+    const bezierEditorDialog = document.getElementById('bezier-editor-dialog');
+    const closeBezierEditorBtn = document.getElementById('close-bezier-editor');
+    const bezierApplyBtn = document.getElementById('bezier-apply-btn');
+    const bezierResetBtn = document.getElementById('bezier-reset-btn');
+    
+    closeBezierEditorBtn?.addEventListener('click', () => {
+      bezierEditorDialog.style.display = 'none';
+    });
+    bezierApplyBtn?.addEventListener('click', () => {
+      this.updateStatus('Bezier curves applied');
+      bezierEditorDialog.style.display = 'none';
+    });
+    bezierResetBtn?.addEventListener('click', () => {
+      this.updateStatus('Bezier editor reset');
+    });
+
+    // Text on Path Dialog
+    const textOnPathDialog = document.getElementById('text-on-path-dialog');
+    const closeTextOnPathBtn = document.getElementById('close-text-on-path');
+    const textOnPathApplyBtn = document.getElementById('text-on-path-apply-btn');
+    const textOnPathPreviewBtn = document.getElementById('text-on-path-preview-btn');
+    const offsetSlider = document.getElementById('text-on-path-offset');
+    const offsetValue = document.getElementById('offset-value');
+    
+    closeTextOnPathBtn?.addEventListener('click', () => {
+      textOnPathDialog.style.display = 'none';
+    });
+    offsetSlider?.addEventListener('input', () => {
+      offsetValue.textContent = offsetSlider.value;
+    });
+    textOnPathPreviewBtn?.addEventListener('click', () => {
+      this.updateStatus('Preview: Text placed on path');
+    });
+    textOnPathApplyBtn?.addEventListener('click', () => {
+      this.updateStatus('Text placed on path');
+      textOnPathDialog.style.display = 'none';
+    });
+
+    // Text to Path Dialog
+    const textToPathDialog = document.getElementById('text-to-path-dialog');
+    const closeTextToPathBtn = document.getElementById('close-text-to-path');
+    const textToPathCancelBtn = document.getElementById('text-to-path-cancel-btn');
+    const textToPathConfirmBtn = document.getElementById('text-to-path-confirm-btn');
+    
+    closeTextToPathBtn?.addEventListener('click', () => {
+      textToPathDialog.style.display = 'none';
+    });
+    textToPathCancelBtn?.addEventListener('click', () => {
+      textToPathDialog.style.display = 'none';
+    });
+    textToPathConfirmBtn?.addEventListener('click', () => {
+      this.updateStatus('Text converted to path');
+      textToPathDialog.style.display = 'none';
+    });
+
+    // Color Vector Dialog
+    const colorVectorDialog = document.getElementById('color-vector-dialog');
+    const closeColorVectorBtn = document.getElementById('close-color-vector');
+    const colorVectorCanvas = document.getElementById('color-vector-canvas');
+    const colorVectorApplyBtn = document.getElementById('color-vector-apply-btn');
+    const colorVectorClearBtn = document.getElementById('color-vector-clear-btn');
+    const colorVectorPreview = document.getElementById('color-vector-preview');
+    const colorVectorHex = document.getElementById('color-vector-hex');
+
+    closeColorVectorBtn?.addEventListener('click', () => {
+      colorVectorDialog.style.display = 'none';
+    });
+
+    // Color picking on canvas click
+    colorVectorCanvas?.addEventListener('click', (e) => {
+      if (!this.colorVectorImageData) return;
+
+      const rect = colorVectorCanvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * (colorVectorCanvas.width / rect.width));
+      const y = Math.floor((e.clientY - rect.top) * (colorVectorCanvas.height / rect.height));
+
+      const imageData = this.colorVectorImageData;
+      const data = imageData.data;
+      const index = (y * imageData.width + x) * 4;
+
+      const r = data[index];
+      const g = data[index + 1];
+      const b = data[index + 2];
+
+      // Convert RGB to hex
+      const hex = '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('').toUpperCase();
+
+      this.selectedColorHex = hex;
+      colorVectorPreview.style.backgroundColor = hex;
+      colorVectorHex.textContent = hex;
+      colorVectorApplyBtn.disabled = false;
+
+      this.updateStatus(`Selected color: ${hex}`);
+    });
+
+    colorVectorClearBtn?.addEventListener('click', () => {
+      this.selectedColorHex = null;
+      colorVectorPreview.style.backgroundColor = '#fff';
+      colorVectorHex.textContent = '#000000';
+      colorVectorApplyBtn.disabled = true;
+      this.updateStatus('Color selection cleared');
+    });
+
+    colorVectorApplyBtn?.addEventListener('click', () => {
+      this.traceSelectedColor();
+    });
+  }
   
   async openTraceDialog() {
     if (!window.craftforge) return;
@@ -1734,7 +2153,12 @@ class CraftForgeApp {
     const dialog = document.getElementById('trace-dialog');
     const originalImg = document.getElementById('trace-original');
     
-    originalImg.src = `file://${imagePath}`;
+    // Handle both file paths and data URLs
+    if (imagePath.startsWith('data:')) {
+      originalImg.src = imagePath;
+    } else {
+      originalImg.src = `file://${imagePath}`;
+    }
     dialog.style.display = 'flex';
     
     // Auto-preview
@@ -1811,6 +2235,9 @@ class CraftForgeApp {
 
     const loaded = await imgLoad;
 
+    // Remove any existing raster image object (from the original import)
+    this.objects = this.objects.filter(obj => obj.type !== 'image');
+
     const newObj = {
       type: 'path',
       x: 50,
@@ -1836,13 +2263,210 @@ class CraftForgeApp {
     this.updateStatus('Traced image added to canvas');
   }
 
+  openFontManagerDialog() {
+    const dialog = document.getElementById('font-manager-dialog');
+    if (!dialog) return;
+    
+    // Populate font list with common fonts
+    const fontListContainer = document.getElementById('font-list-container');
+    if (fontListContainer) {
+      const fonts = [
+        'Arial', 'Helvetica', 'Times New Roman', 'Courier New', 'Georgia',
+        'Verdana', 'Comic Sans MS', 'Trebuchet MS', 'Palatino', 'Garamond',
+        'Bookman', 'Consolas', 'Impact', 'Lucida Console', 'Tahoma'
+      ];
+      
+      fontListContainer.innerHTML = fonts.map(font => 
+        `<div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #333; font-family: '${font}'; color: #ccc;" data-font="${font}">${font}</div>`
+      ).join('');
+      
+      fontListContainer.querySelectorAll('[data-font]').forEach(el => {
+        el.addEventListener('click', () => {
+          const font = el.getAttribute('data-font');
+          const preview = document.getElementById('font-preview');
+          if (preview) {
+            preview.style.fontFamily = font;
+          }
+          document.querySelectorAll('[data-font]').forEach(e => e.style.backgroundColor = 'transparent');
+          el.style.backgroundColor = '#8b0000';
+        });
+      });
+    }
+    
+    // Update preview on text change
+    const previewInput = document.getElementById('font-preview-text');
+    if (previewInput) {
+      previewInput.addEventListener('input', () => {
+        const preview = document.getElementById('font-preview');
+        if (preview) {
+          preview.textContent = previewInput.value || 'Sample Text';
+        }
+      });
+    }
+    
+    dialog.style.display = 'flex';
+    this.updateStatus('Font Manager open');
+  }
+
+  openBezierEditorDialog() {
+    if (this.selectedObjects.length === 0) {
+      this.updateStatus('Please select a path to edit');
+      return;
+    }
+    
+    const dialog = document.getElementById('bezier-editor-dialog');
+    if (!dialog) return;
+    
+    // Check if selected object is a path
+    const selectedObj = this.selectedObjects[0];
+    if (selectedObj.type !== 'path') {
+      this.updateStatus('Bezier Editor: Select a path object');
+      return;
+    }
+    
+    dialog.style.display = 'flex';
+    this.updateStatus('Bezier Editor: Edit control points on the canvas');
+  }
+
+  openTextOnPathDialog() {
+    if (this.selectedObjects.length === 0) {
+      this.updateStatus('Please select a path to place text on');
+      return;
+    }
+    
+    const dialog = document.getElementById('text-on-path-dialog');
+    if (!dialog) return;
+    
+    // Check if selected object is a path
+    const selectedObj = this.selectedObjects[0];
+    if (selectedObj.type !== 'path') {
+      this.updateStatus('Text on Path: Select a path object');
+      return;
+    }
+    
+    dialog.style.display = 'flex';
+    this.updateStatus('Text on Path: Enter text and adjust settings');
+  }
+
+  openTextToPathDialog() {
+    if (this.selectedObjects.length === 0) {
+      this.updateStatus('Please select text to convert');
+      return;
+    }
+    
+    const dialog = document.getElementById('text-to-path-dialog');
+    if (!dialog) return;
+    
+    // Check if selected object is text
+    const selectedObj = this.selectedObjects[0];
+    if (selectedObj.type !== 'text') {
+      this.updateStatus('Text to Path: Select a text object');
+      return;
+    }
+    
+    dialog.style.display = 'flex';
+    this.updateStatus('Text to Path: Ready to convert selected text');
+  }
+
+  async openColorVectorDialog() {
+    const dialog = document.getElementById('color-vector-dialog');
+    if (!dialog || !this.currentImagePath) return;
+
+    dialog.style.display = 'flex';
+    this.updateStatus('Color Vector: Click on a color in the preview to trace it');
+    this.selectedColorHex = null;
+
+    // Load image to canvas for color picking
+    const canvas = document.getElementById('color-vector-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Scale to fit preview area
+      const maxWidth = 300;
+      const maxHeight = 150;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth || height > maxHeight) {
+        const aspectRatio = width / height;
+        if (width > maxWidth) {
+          width = maxWidth;
+          height = width / aspectRatio;
+        }
+        if (height > maxHeight) {
+          height = maxHeight;
+          width = height * aspectRatio;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Store image data for color picking
+      this.colorVectorImageData = ctx.getImageData(0, 0, width, height);
+      this.colorVectorCanvas = canvas;
+    };
+
+    img.onerror = () => {
+      this.updateStatus('Failed to load image for color vector');
+    };
+
+    // Load image
+    if (this.currentImagePath.startsWith('data:')) {
+      img.src = this.currentImagePath;
+    } else {
+      img.src = `file://${this.currentImagePath}`;
+    }
+  }
+
+  traceSelectedColor() {
+    if (!this.selectedColorHex || !this.currentImagePath || !window.craftforge) {
+      this.updateStatus('Please select a color first');
+      return;
+    }
+
+    const detail = document.getElementById('color-vector-detail').value;
+    const smooth = document.getElementById('color-vector-smooth').checked;
+
+    // Call main process to extract and trace the color
+    window.craftforge.traceColorOnly(this.currentImagePath, this.selectedColorHex, {
+      detail,
+      smooth
+    }).then((result) => {
+      if (result && result.svg) {
+        this.traceResult = result;
+        this.updateStatus('Color vectorized successfully');
+
+        // Close dialog and apply
+        document.getElementById('color-vector-dialog').style.display = 'none';
+        this.applyTrace();
+      } else {
+        this.updateStatus('Failed to trace selected color');
+      }
+    }).catch((err) => {
+      this.updateStatus('Error: ' + err.message);
+    });
+  }
+
   async aiSearch(query) {
     const statusEl = document.getElementById('ai-status');
-    if (!statusEl) return;
+    const resultsEl = document.getElementById('ai-results');
+    
+    if (statusEl) {
+      statusEl.textContent = '🔍 Searching SVGs...';
+      statusEl.className = 'ai-status';
+      statusEl.style.display = 'block';
+    }
+    if (resultsEl) {
+      resultsEl.style.display = 'none';
+      resultsEl.innerHTML = '';
+    }
 
-    statusEl.textContent = '🔍 Searching...';
-    statusEl.className = 'ai-status';
-    statusEl.style.display = 'block';
+    this.updateStatus('Searching for SVG files...');
 
     try {
       const response = await fetch('http://localhost:4000/search', {
@@ -1851,74 +2475,220 @@ class CraftForgeApp {
         body: JSON.stringify({ query })
       });
 
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}. Make sure the AI server is running.`);
+      }
+
       const data = await response.json();
-      
-      if (data.results && data.results.length > 0) {
-        // Get the first result
-        const result = data.results[0];
-        statusEl.textContent = `✅ Found: ${result.title}`;
-        statusEl.className = 'ai-status success';
-        this.updateStatus(`Design found: ${result.title}`);
+      const results = Array.isArray(data.results) ? data.results : [];
+
+      if (results.length > 0) {
+        if (statusEl) {
+          statusEl.style.display = 'none';
+        }
+        this.renderSearchResults(results);
+        if (statusEl) {
+          statusEl.textContent = `✅ Found ${results.length} SVG results`;
+          statusEl.className = 'ai-status success';
+        }
+        this.updateStatus(`Found ${results.length} SVG results`);
       } else {
-        statusEl.textContent = '❌ No results found';
-        statusEl.className = 'ai-status error';
+        if (statusEl) {
+          statusEl.textContent = '⚠️ No SVG results found on Wikimedia Commons. Try searching for "star", "heart", "arrow", "tree", "icon", etc.';
+          statusEl.className = 'ai-status error';
+        }
+        this.updateStatus('No SVG results - try different search terms');
       }
     } catch (error) {
-      statusEl.textContent = `❌ Error: ${error.message}`;
-      statusEl.className = 'ai-status error';
-      this.updateStatus('AI search failed: ' + error.message);
+      console.error('AI Search Error:', error);
+      if (statusEl) {
+        statusEl.textContent = `❌ Error: ${error.message}`;
+        statusEl.className = 'ai-status error';
+      }
+      this.updateStatus('Search failed: ' + error.message);
     }
   }
 
-  async aiGenerate(prompt) {
-    const statusEl = document.getElementById('ai-status');
-    if (!statusEl) return;
+  renderSearchResults(results) {
+    const resultsEl = document.getElementById('ai-results');
+    if (!resultsEl) return;
 
-    statusEl.textContent = '🎨 Generating...';
-    statusEl.className = 'ai-status';
-    statusEl.style.display = 'block';
+    resultsEl.innerHTML = `
+      <div class="svg-gallery">
+        ${results.map((r) => {
+          const safeTitle = String(r.title || 'SVG').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const safeUrl = String(r.url || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `
+            <div class="gallery-item" data-expandable="true">
+              <div class="gallery-title" title="${safeTitle}">${safeTitle}</div>
+              <div class="gallery-actions">
+                <button class="gallery-btn import-btn" data-url="${safeUrl}" title="Import to canvas">📥</button>
+                <button class="gallery-btn open-btn" data-url="${safeUrl}" title="Open in browser">🔗</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    resultsEl.style.display = 'block';
+    
+    // Add event listeners
+    resultsEl.querySelectorAll('.import-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-url');
+        await this.importSvgFromUrl(url);
+      });
+    });
+
+    resultsEl.querySelectorAll('.open-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-url');
+        require('electron').shell.openExternal(url);
+      });
+    });
+
+    // Add click to expand gallery
+    resultsEl.querySelectorAll('.gallery-item').forEach(item => {
+      item.addEventListener('click', () => {
+        this.openFullPageGallery(results);
+      });
+    });
+  }
+
+  openFullPageGallery(results) {
+    const modal = document.getElementById('gallery-modal');
+    const grid = document.getElementById('gallery-modal-grid');
+    if (!modal || !grid) return;
+
+    grid.innerHTML = results.map((r) => {
+      const safeTitle = String(r.title || 'SVG').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const safeUrl = String(r.url || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return `
+        <div class="gallery-item">
+          <div class="gallery-title" title="${safeTitle}">${safeTitle}</div>
+          <div class="gallery-actions">
+            <button class="gallery-btn import-btn" data-url="${safeUrl}" title="Import to canvas">📥</button>
+            <button class="gallery-btn open-btn" data-url="${safeUrl}" title="Open in browser">🔗</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    modal.style.display = 'flex';
+
+    // Add event listeners for full page gallery
+    grid.querySelectorAll('.import-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-url');
+        await this.importSvgFromUrl(url);
+      });
+    });
+
+    grid.querySelectorAll('.open-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-url');
+        require('electron').shell.openExternal(url);
+      });
+    });
+  }
+
+  closeFullPageGallery() {
+    const modal = document.getElementById('gallery-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  async importSvgFromUrl(url) {
+    const statusEl = document.getElementById('ai-status');
+    if (statusEl) {
+      statusEl.textContent = '⬇️ Importing SVG...';
+      statusEl.className = 'ai-status';
+      statusEl.style.display = 'block';
+    }
 
     try {
-      const response = await fetch('http://localhost:4000/generate', {
+      const response = await fetch('http://localhost:4000/fetch-svg', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ url })
       });
 
       const data = await response.json();
-      
-      if (data.svg) {
-        // Add the generated SVG to the canvas
-        const newObj = {
-          type: 'path',
-          x: 100,
-          y: 100,
-          width: 400,
-          height: 400,
-          svg: data.svg,
-          fill: 'transparent',
-          stroke: '#000000',
-          strokeWidth: 1,
-          rotation: 0
-        };
+      if (!data.svg) {
+        throw new Error('No SVG returned');
+      }
 
-        this.saveState();
-        this.objects.push(newObj);
-        this.selectedObjects = [newObj];
-        this.render();
+      await this.importSvgString(data.svg);
 
-        statusEl.textContent = '✅ Design generated!';
+      if (statusEl) {
+        statusEl.textContent = '✅ SVG imported to canvas';
         statusEl.className = 'ai-status success';
-        this.updateStatus('AI design added to canvas');
-      } else {
-        statusEl.textContent = '❌ Generation failed';
+      }
+      this.updateStatus('SVG imported to canvas');
+    } catch (error) {
+      if (statusEl) {
+        statusEl.textContent = `❌ Import failed: ${error.message}`;
         statusEl.className = 'ai-status error';
       }
-    } catch (error) {
-      statusEl.textContent = `❌ Error: ${error.message}`;
-      statusEl.className = 'ai-status error';
-      this.updateStatus('AI generation failed: ' + error.message);
+      this.updateStatus('SVG import failed: ' + error.message);
     }
+  }
+
+  async importSvgString(svg) {
+    let svgStr = String(svg || '');
+    if (!svgStr.trim().startsWith('<svg')) {
+      throw new Error('Invalid SVG');
+    }
+
+    // Ensure SVG has width/height if viewBox exists
+    try {
+      const vbMatch = svgStr.match(/<svg[^>]*viewBox="([^"]+)"[^>]*>/i);
+      const hasWH = /<svg[^>]*(width|height)=/i.test(svgStr);
+      if (vbMatch && !hasWH) {
+        const parts = vbMatch[1].split(/[,\s]+/).map(Number);
+        if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
+          svgStr = svgStr.replace(/<svg/i, `<svg width="${parts[2]}" height="${parts[3]}"`);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+
+    const img = new Image();
+    const imgLoad = new Promise((resolve) => {
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+    });
+    img.src = dataUrl;
+
+    const loaded = await imgLoad;
+
+    const newObj = {
+      type: 'path',
+      x: 60,
+      y: 60,
+      width: loaded && img.naturalWidth ? img.naturalWidth : 200,
+      height: loaded && img.naturalHeight ? img.naturalHeight : 200,
+      svg: svgStr,
+      fill: 'transparent',
+      stroke: '#000000',
+      strokeWidth: 1,
+      rotation: 0,
+      _svgImage: loaded ? img : undefined
+    };
+
+    this.saveState();
+    this.objects.push(newObj);
+    this.selectedObjects = [newObj];
+    this.render();
   }
 
   openTraceDialog() {
@@ -1953,7 +2723,241 @@ class CraftForgeApp {
         .catch(err => this.updateStatus('Trace failed: ' + err.message));
     }
   }
+
+  // Design Assistant
+  async askAssistant(message) {
+    const chatEl = document.getElementById('assistant-chat');
+    if (!chatEl) return;
+
+    // Add user message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'assistant-message user';
+    userMsg.textContent = message;
+    chatEl.appendChild(userMsg);
+    chatEl.scrollTop = chatEl.scrollHeight;
+
+    // Add thinking indicator
+    const thinkingMsg = document.createElement('div');
+    thinkingMsg.className = 'assistant-message system';
+    thinkingMsg.textContent = '💭 Thinking...';
+    chatEl.appendChild(thinkingMsg);
+    chatEl.scrollTop = chatEl.scrollHeight;
+
+    try {
+      const response = await fetch('http://localhost:4000/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message,
+          context: {
+            selectedObjects: this.selectedObjects.length,
+            currentTool: this.currentTool,
+            hasObjects: this.objects.length > 0
+          }
+        })
+      });
+
+      const data = await response.json();
+      chatEl.removeChild(thinkingMsg);
+
+      const assistantMsg = document.createElement('div');
+      assistantMsg.className = 'assistant-message assistant';
+      assistantMsg.textContent = data.reply || 'Sorry, I could not generate a response.';
+      chatEl.appendChild(assistantMsg);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    } catch (error) {
+      chatEl.removeChild(thinkingMsg);
+      
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'assistant-message system';
+      errorMsg.textContent = '❌ Error: ' + error.message;
+      chatEl.appendChild(errorMsg);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+  }
+
+  // SVG Optimizer tools
+  async optimizeSvg() {
+    const selected = this.selectedObjects.filter(o => o.svg);
+    if (selected.length === 0) {
+      this.updateStatus('Select an SVG object to optimize');
+      return;
+    }
+
+    this.updateStatus('Optimizing SVG...');
+    
+    try {
+      const response = await fetch('http://localhost:4000/optimize-svg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ svg: selected[0].svg })
+      });
+
+      const data = await response.json();
+      if (!data.optimized) {
+        throw new Error('Optimization failed');
+      }
+
+      this.saveState();
+      selected[0].svg = data.optimized;
+      selected[0]._svgImage = null; // Force re-render
+      this.render();
+      
+      const savings = data.originalSize && data.optimizedSize 
+        ? ` (${Math.round((1 - data.optimizedSize / data.originalSize) * 100)}% smaller)`
+        : '';
+      this.updateStatus(`SVG optimized${savings}`);
+    } catch (error) {
+      this.updateStatus('Optimization failed: ' + error.message);
+    }
+  }
+
+  async simplifySvg() {
+    const selected = this.selectedObjects.filter(o => o.svg);
+    if (selected.length === 0) {
+      this.updateStatus('Select an SVG object to simplify');
+      return;
+    }
+
+    this.updateStatus('Simplifying paths...');
+    
+    try {
+      const response = await fetch('http://localhost:4000/simplify-svg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ svg: selected[0].svg, tolerance: 1.0 })
+      });
+
+      const data = await response.json();
+      if (!data.simplified) {
+        throw new Error('Simplification failed');
+      }
+
+      this.saveState();
+      selected[0].svg = data.simplified;
+      selected[0]._svgImage = null;
+      this.render();
+      
+      this.updateStatus('SVG simplified');
+    } catch (error) {
+      this.updateStatus('Simplification failed: ' + error.message);
+    }
+  }
+
+  async cleanSvg() {
+    const selected = this.selectedObjects.filter(o => o.svg);
+    if (selected.length === 0) {
+      this.updateStatus('Select an SVG object to clean');
+      return;
+    }
+
+    this.updateStatus('Cleaning SVG code...');
+    
+    try {
+      const response = await fetch('http://localhost:4000/clean-svg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ svg: selected[0].svg })
+      });
+
+      const data = await response.json();
+      if (!data.cleaned) {
+        throw new Error('Cleaning failed');
+      }
+
+      this.saveState();
+      selected[0].svg = data.cleaned;
+      selected[0]._svgImage = null;
+      this.render();
+      
+      this.updateStatus('SVG cleaned');
+    } catch (error) {
+      this.updateStatus('Cleaning failed: ' + error.message);
+    }
+  }
+
+  async loadSavedSvgs() {
+    const savedSvgsEl = document.getElementById('saved-svgs');
+    if (!savedSvgsEl) return;
+
+    try {
+      const { dialog } = require('electron').remote;
+      const result = await dialog.showOpenDialog({
+        properties: ['openFile', 'multiSelections'],
+        filters: [{ name: 'SVG Files', extensions: ['svg'] }]
+      });
+
+      if (result.canceled || !result.filePaths.length) return;
+
+      const fs = require('fs');
+      const gallery = [];
+
+      for (const filePath of result.filePaths) {
+        try {
+          const svgContent = fs.readFileSync(filePath, 'utf-8');
+          const fileName = filePath.split(/[/\\]/).pop() || 'SVG File';
+          const encodedSvg = btoa(svgContent);
+          
+          gallery.push({
+            title: fileName,
+            svg: svgContent,
+            encodedSvg: encodedSvg,
+            filePath: filePath
+          });
+        } catch (e) {
+          console.error('Error reading file:', filePath, e);
+        }
+      }
+
+      this.renderSavedSvgGallery(gallery);
+      this.updateStatus(`Loaded ${gallery.length} SVG files`);
+    } catch (error) {
+      console.error('Error loading SVG files:', error);
+      this.updateStatus('Failed to load SVG files');
+    }
+  }
+
+  renderSavedSvgGallery(svgFiles) {
+    const savedSvgsEl = document.getElementById('saved-svgs');
+    if (!savedSvgsEl) return;
+
+    savedSvgsEl.innerHTML = svgFiles.map((file, idx) => {
+      const safeTitle = String(file.title || 'SVG').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const dataUri = `data:image/svg+xml;base64,${file.encodedSvg}`;
+      
+      return `
+        <div class="gallery-item">
+          <div class="gallery-thumbnail" data-svg="${file.encodedSvg}" data-index="${idx}">
+            <img src="${dataUri}" alt="${safeTitle}" onerror="this.parentElement.innerHTML='<div style=\"display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:10px;\">SVG</div>'">
+          </div>
+          <div class="gallery-title" title="${safeTitle}">${safeTitle}</div>
+          <div class="gallery-actions">
+            <button class="gallery-btn import-local-btn" data-index="${idx}" title="Import to canvas">📥</button>
+            <button class="gallery-btn view-local-btn" data-path="${file.filePath}" title="View">👁️</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Add event listeners
+    savedSvgsEl.querySelectorAll('.import-local-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(btn.getAttribute('data-index'));
+        if (svgFiles[idx]) {
+          this.importSvgString(svgFiles[idx].svg);
+        }
+      });
+    });
+
+    savedSvgsEl.querySelectorAll('.view-local-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const path = btn.getAttribute('data-path');
+        require('electron').shell.openPath(path);
+      });
+    });
+  }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new CraftForgeApp();
 });

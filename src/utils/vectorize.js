@@ -131,6 +131,114 @@ class Vectorizer {
   }
 
   /**
+   * Trace only pixels of a selected color
+   * @param {string} imagePath - Path to the image file or data URL
+   * @param {string} colorHex - Color to trace in format #RRGGBB
+   * @param {object} options - Tracing options
+   * @returns {Promise<object>} - SVG string with only selected color traced
+   */
+  async traceColorOnly(imagePath, colorHex, options = {}) {
+    const opts = { ...this.defaultOptions, ...options };
+    
+    try {
+      // Parse hex color
+      const hexMatch = colorHex.match(/^#?([0-9A-Fa-f]{6})$/);
+      if (!hexMatch) {
+        throw new Error('Invalid color format. Use #RRGGBB');
+      }
+      
+      const hex = hexMatch[1];
+      const targetR = parseInt(hex.substring(0, 2), 16);
+      const targetG = parseInt(hex.substring(2, 4), 16);
+      const targetB = parseInt(hex.substring(4, 6), 16);
+      
+      // Load image
+      let fileToTrace = imagePath;
+      let tempFile = null;
+      
+      if (imagePath.startsWith('data:')) {
+        tempFile = await this.dataUrlToFile(imagePath);
+        fileToTrace = tempFile;
+      }
+      
+      // Read image and create color mask
+      const img = await Jimp.read(fileToTrace);
+      const w = img.bitmap.width;
+      const h = img.bitmap.height;
+      
+      // Create a new image with only the selected color as white, rest as black
+      const colorMask = new Jimp(w, h, 0x000000FF); // Start with black
+      
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = (y * w + x) * 4;
+          const r = img.bitmap.data[idx];
+          const g = img.bitmap.data[idx + 1];
+          const b = img.bitmap.data[idx + 2];
+          
+          // Check if this pixel matches the target color (with some tolerance)
+          const tolerance = 15;
+          if (Math.abs(r - targetR) < tolerance && 
+              Math.abs(g - targetG) < tolerance && 
+              Math.abs(b - targetB) < tolerance) {
+            // Set to white
+            colorMask.bitmap.data[idx] = 255;
+            colorMask.bitmap.data[idx + 1] = 255;
+            colorMask.bitmap.data[idx + 2] = 255;
+            colorMask.bitmap.data[idx + 3] = 255;
+          }
+        }
+      }
+      
+      // Save mask to temp file
+      const maskPath = path.join(require('os').tmpdir(), `color-mask-${Date.now()}.png`);
+      await colorMask.write(maskPath);
+      
+      return new Promise((resolve, reject) => {
+        potrace.trace(maskPath, opts, async (err, svg) => {
+          // Clean up temp files
+          fs.unlink(maskPath, () => {});
+          if (tempFile) {
+            fs.unlink(tempFile, () => {});
+          }
+          
+          if (err) {
+            reject(err);
+            return;
+          }
+          
+          // Ensure SVG has width/height attributes
+          try {
+            const hasWH = /<svg[^>]*(width|height)=/i.test(svg);
+            if (!hasWH) {
+              svg = svg.replace(/<svg/i, `<svg width="${w}" height="${h}"`);
+            }
+          } catch (e) {
+            // ignore
+          }
+          
+          // Change stroke color to the selected color
+          let coloredSvg = svg.replace(/stroke="[^"]*"/g, `stroke="${colorHex}"`);
+          coloredSvg = coloredSvg.replace(/fill="[^"]*"/g, `fill="none"`);
+          
+          // Extract path data
+          const dRegex = /d=\"([^\"]+)\"/g;
+          let m;
+          const parts = [];
+          while ((m = dRegex.exec(coloredSvg)) !== null) {
+            if (m[1]) parts.push(m[1]);
+          }
+          const pathData = parts.join(' ');
+          
+          resolve({ svg: coloredSvg, pathData: pathData, options: opts });
+        });
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  /**
    * Trace with posterization (multiple colors/layers)
    * @param {string} imagePath - Path to the image file or data URL
    * @param {number} steps - Number of color steps

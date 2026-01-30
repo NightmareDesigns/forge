@@ -99,7 +99,7 @@ class LicenseUI {
     const content = document.createElement('div');
     content.innerHTML = `
       <div style="margin: 10px 0;">
-        <p>Enter your license key to activate CraftForge:</p>
+        <p>Enter your license key to activate Nightmare Designs SVG Forge:</p>
         <input 
           type="text" 
           id="license-key-input" 
@@ -174,7 +174,7 @@ class LicenseUI {
       // Check if locked; if so, don't allow close
       const lockStatus = this.licenseStatus;
       if (lockStatus.type === 'expired') {
-        alert('Trial expired. You must enter a valid license key to continue using CraftForge.');
+        alert('Trial expired. You must enter a valid license key to continue using Nightmare Designs SVG Forge.');
       } else {
         modal.remove();
       }

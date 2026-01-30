@@ -17,7 +17,7 @@ function createWindow() {
       preload: path.join(__dirname, 'keygen-preload.js')
     },
     icon: path.join(__dirname, '../assets/icons/icon.png'),
-    title: 'CraftForge License Key Generator - ADMIN ONLY'
+    title: 'Nightmare Designs SVG Forge License Key Generator - ADMIN ONLY'
   });
 
   mainWindow.loadFile(path.join(__dirname, 'renderer/keygen.html'));
@@ -44,8 +44,8 @@ function showAbout() {
   const { dialog } = require('electron');
   dialog.showMessageBox(mainWindow, {
     type: 'info',
-    title: 'CraftForge License Key Generator',
-    message: '🔐 CraftForge License Key Generator v1.0.0',
+    title: 'Nightmare Designs SVG Forge License Key Generator',
+    message: '🔐 Nightmare Designs SVG Forge License Key Generator v1.0.0',
     detail: 'ADMIN TOOL ONLY - License key generation and management\n\nThis tool is for remote administration only.\nNot included in user licenses.\n\nhttps://nightmaredesigns.org'
   });
 }
