@@ -3122,7 +3122,6 @@ class CraftForgeApp {
     ctx.beginPath();
     
     if (this.aiSpeaking) {
-      const mouthMove = Math.sin(time * 15) * 10;
       ctx.arc(centerX, centerY + 30, 30, 0.2, Math.PI - 0.2);
     } else {
       ctx.arc(centerX, centerY + 20, 30, 0.2, Math.PI - 0.2);
