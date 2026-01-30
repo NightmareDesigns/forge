@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://localhost:*; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:">
+  <title>Nightmare Designs SVG Forge - Mobile</title>
+  <link rel="stylesheet" href="mobile.css">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="../../assets/icons/grim-reaper-logo.png">
+  <meta name="theme-color" content="#0d0000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+  <div id="app-mobile">
+    <!-- Header -->
+    <header class="mobile-header">
+      <div class="mobile-header-left">
+        <button id="menu-toggle" class="mobile-menu-btn" title="Menu">
+          <span class="icon">☰</span>
+        </button>
+      </div>
+      <div class="mobile-header-center">
+        <span class="mobile-logo">🖤 SVG Forge</span>
+      </div>
+      <div class="mobile-header-right">
+        <button id="mobile-help" class="mobile-icon-btn" title="Help">
+          <span class="icon">?</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Slide-out Menu -->
+    <nav id="mobile-menu" class="mobile-menu">
+      <div class="mobile-menu-header">
+        <span class="mobile-menu-title">Menu</span>
+        <button id="menu-close" class="mobile-menu-close">✕</button>
+      </div>
+      <div class="mobile-menu-items">
+        <button class="mobile-menu-item" data-action="new-project">
+          <span class="icon">➕</span> New Project
+        </button>
+        <button class="mobile-menu-item" data-action="open-project">
+          <span class="icon">📂</span> Open Project
+        </button>
+        <button class="mobile-menu-item" data-action="save-project">
+          <span class="icon">💾</span> Save Project
+        </button>
+        <button class="mobile-menu-item" data-action="export">
+          <span class="icon">📤</span> Export
+        </button>
+        <div class="mobile-menu-divider"></div>
+        <button class="mobile-menu-item" data-action="settings">
+          <span class="icon">⚙️</span> Settings
+        </button>
+        <button class="mobile-menu-item" data-action="help">
+          <span class="icon">ℹ️</span> Help & Guide
+        </button>
+        <button class="mobile-menu-item" data-action="about">
+          <span class="icon">🖤</span> About
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="mobile-main">
+      <!-- Canvas Area -->
+      <div class="mobile-canvas-area">
+        <canvas id="design-canvas-mobile" class="mobile-design-canvas"></canvas>
+        
+        <!-- Zoom Controls (Floating) -->
+        <div class="mobile-zoom-controls">
+          <button id="zoom-out-mobile" class="mobile-zoom-btn" title="Zoom Out">−</button>
+          <span id="zoom-level-mobile" class="mobile-zoom-level">100%</span>
+          <button id="zoom-in-mobile" class="mobile-zoom-btn" title="Zoom In">+</button>
+          <button id="fit-screen-mobile" class="mobile-zoom-btn" title="Fit">⛶</button>
+        </div>
+      </div>
+
+      <!-- Bottom Tool Panel -->
+      <div class="mobile-tool-panel">
+        <div class="mobile-tool-scroll">
+          <!-- Selection & Editing -->
+          <div class="mobile-tool-group">
+            <button class="mobile-tool-btn active" data-tool="select" title="Select">
+              <span class="icon">⬚</span>
+              <span class="label">Select</span>
+            </button>
+            <button class="mobile-tool-btn" data-tool="node" title="Nodes">
+              <span class="icon">◈</span>
+              <span class="label">Nodes</span>
+            </button>
+          </div>
+
+          <!-- Drawing Tools -->
+          <div class="mobile-tool-group">
+            <button class="mobile-tool-btn" data-tool="pen" title="Pen">
+              <span class="icon">✒</span>
+              <span class="label">Pen</span>
+            </button>
+            <button class="mobile-tool-btn" data-tool="freehand" title="Draw">
+              <span class="icon">✏</span>
+              <span class="label">Draw</span>
+            </button>
+            <button class="mobile-tool-btn" data-tool="eraser" title="Erase">
+              <span class="icon">🧹</span>
+              <span class="label">Erase</span>
+            </button>
+          </div>
+
+          <!-- Text & Objects -->
+          <div class="mobile-tool-group">
+            <button class="mobile-tool-btn" data-tool="text" title="Text">
+              <span class="icon">T</span>
+              <span class="label">Text</span>
+            </button>
+            <button class="mobile-tool-btn" data-tool="shapes" title="Shapes">
+              <span class="icon">⬤</span>
+              <span class="label">Shapes</span>
+            </button>
+            <button class="mobile-tool-btn" data-tool="image" title="Image">
+              <span class="icon">🖼</span>
+              <span class="label">Image</span>
+            </button>
+          </div>
+
+          <!-- More Options -->
+          <div class="mobile-tool-group">
+            <button class="mobile-tool-btn" id="mobile-more-tools" title="More Tools">
+              <span class="icon">⋯</span>
+              <span class="label">More</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side Panel (Hidden by default) -->
+      <div class="mobile-right-panel">
+        <div class="mobile-panel-header">
+          <span>Properties</span>
+          <button id="mobile-panel-close" class="mobile-panel-close">✕</button>
+        </div>
+        <div class="mobile-panel-content">
+          <!-- Fill & Stroke -->
+          <div class="mobile-panel-section">
+            <h4>Fill</h4>
+            <input type="color" id="prop-fill-mobile" class="mobile-color-input" value="#ff4444" title="Fill Color">
+            <button id="no-fill-mobile" class="mobile-btn small">No Fill</button>
+          </div>
+
+          <!-- Stroke -->
+          <div class="mobile-panel-section">
+            <h4>Stroke</h4>
+            <input type="color" id="prop-stroke-mobile" class="mobile-color-input" value="#000000" title="Stroke Color">
+            <input type="range" id="stroke-width-mobile" class="mobile-slider" min="0" max="20" value="2">
+            <label>Width: <span id="stroke-width-value-mobile">2</span>px</label>
+          </div>
+
+          <!-- Brush -->
+          <div class="mobile-panel-section">
+            <h4>Brush</h4>
+            <input type="range" id="brush-size-mobile" class="mobile-slider" min="1" max="50" value="3">
+            <label>Size: <span id="brush-size-value-mobile">3</span>px</label>
+            <input type="range" id="brush-opacity-mobile" class="mobile-slider" min="0" max="100" value="100">
+            <label>Opacity: <span id="brush-opacity-value-mobile">100</span>%</label>
+          </div>
+
+          <!-- Font (for text tool) -->
+          <div class="mobile-panel-section" id="font-section-mobile" style="display:none;">
+            <h4>Font</h4>
+            <input type="text" id="text-content-mobile" class="mobile-input" placeholder="Text">
+            <select id="font-family-mobile" class="mobile-select">
+              <option>Arial</option>
+              <option>Helvetica</option>
+              <option selected>Georgia</option>
+              <option>Times New Roman</option>
+              <option>Courier New</option>
+              <option>Creepster</option>
+            </select>
+            <input type="range" id="font-size-mobile" class="mobile-slider" min="8" max="72" value="24">
+            <label>Size: <span id="font-size-value-mobile">24</span>px</label>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Dialogs -->
+    <div id="mobile-dialog-overlay" class="mobile-dialog-overlay" style="display:none;"></div>
+    
+    <div id="mobile-dialog" class="mobile-dialog" style="display:none;">
+      <div class="mobile-dialog-content">
+        <div class="mobile-dialog-header">
+          <h3 id="mobile-dialog-title"></h3>
+          <button class="mobile-dialog-close">✕</button>
+        </div>
+        <div id="mobile-dialog-body" class="mobile-dialog-body"></div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="mobile-toast" class="mobile-toast"></div>
+  </div>
+
+  <script src="../../node_modules/@capacitor/core/dist/capacitor.js"></script>
+  <script src="mobile-app.js"></script>
+</body>
+</html>

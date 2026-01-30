@@ -1,0 +1,21 @@
+{
+  "appId": "org.nightmaredesigns.svgforge",
+  "appName": "Nightmare Designs SVG Forge",
+  "webDir": "dist-mobile",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "launchShowDuration": 3000,
+      "backgroundColor": "#0d0000",
+      "showSpinner": true,
+      "spinnerColor": "#ff4444"
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#0d0000"
+    }
+  }
+}
