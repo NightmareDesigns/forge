@@ -1,7 +1,7 @@
 {
-  "name": "nightmare-designs-forge",
+  "name": "nightmare-designs-svg-forge",
   "version": "0.1.0",
-  "description": "A powerful design and cutting software - complete replacement for Cricut Design Space with more tools and options",
+  "description": "Nightmare Designs SVG Forge - Professional SVG design and cutting software for creative professionals",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -9,8 +9,10 @@
     "keygen": "electron src/keygen-app.js",
     "ai-server": "node src/server/server.js",
     "admin-server": "node src/admin/AdminServer.js",
-    "admin-dashboard": "node src/admin/AdminServer.js & start http://localhost:5000/dashboard.html",
+    "admin-dashboard": "node src/admin/AdminServer.js & start http://localhost:5000/admin-dashboard.html",
+    "admin-app": "electron src/admin/main-admin.js",
     "build": "electron-builder",
+    "build-admin": "electron-builder -c.extraMetadata.main=src/admin/main-admin.js --config electron-builder-admin.json",
     "test": "jest",
     "lint": "eslint src/",
     "generate-keys": "node scripts/generate-keys.js",
@@ -37,6 +39,7 @@
   "devDependencies": {
     "electron": "^40.0.0",
     "electron-builder": "^26.6.0",
+    "electron-is-dev": "3.0.1",
     "eslint": "^8.56.0",
     "jest": "^29.7.0"
   },
