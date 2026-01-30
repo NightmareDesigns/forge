@@ -3252,7 +3252,6 @@ class CraftForgeApp {
 
   toggleCamera() {
     const btn = document.getElementById('toggle-camera-btn');
-    const userVideo = document.getElementById('user-camera-video');
     
     if (!this.userMediaStream) return;
 
