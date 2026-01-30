@@ -302,14 +302,16 @@ const eyeOffset = 30; // Change eye spacing
 ## Future Enhancements
 
 Potential improvements for future versions:
-- [ ] More realistic 3D avatar (using Three.js)
-- [ ] Lip-sync animation matching phonemes
-- [ ] Multiple avatar personalities
+- [ ] Enhanced 3D avatar with texture mapping for photorealism
+- [ ] True phoneme-based lip-sync using audio analysis
+- [ ] Multiple avatar personalities and appearances
 - [ ] Video recording and playback
 - [ ] Screen sharing for design review
 - [ ] Multi-language support
 - [ ] Gesture recognition
 - [ ] Emotion detection from user's face
+- [ ] Eye tracking to follow cursor/user
+- [ ] Full body animation (not just face)
 
 ## API Reference
 

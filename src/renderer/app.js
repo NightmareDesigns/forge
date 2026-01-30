@@ -3339,8 +3339,6 @@ class CraftForgeApp {
 
     // Hide modal
     modal.style.display = 'none';
-
-    this.addVideoChatMessage('system', 'Video chat ended');
   }
 }
 

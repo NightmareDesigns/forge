@@ -296,6 +296,7 @@ export class RealisticAvatar {
     if (!this.renderer) return;
 
     const time = Date.now() / 1000;
+    const FRAME_TIME = 1 / 60; // Target 60 FPS
 
     // Natural head movement (subtle breathing motion)
     this.faceGroup.rotation.y = Math.sin(time * 0.5) * 0.1;
@@ -303,7 +304,7 @@ export class RealisticAvatar {
     this.faceGroup.position.y = Math.sin(time * 0.8) * 0.05;
 
     // Realistic blinking
-    this.blinkTimer += 0.016; // ~60fps
+    this.blinkTimer += FRAME_TIME;
     if (this.blinkTimer > 3 + Math.random() * 2) {
       this.performBlink();
       this.blinkTimer = 0;
