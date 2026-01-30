@@ -25,6 +25,15 @@ npm-debug.log*
 .env
 .env.local
 
+# Sensitive data
+data/
+data/*.json
+*.json.bak
+
+# Admin (development only)
+src/admin/
+ADMIN_SETUP.md
+
 # Test coverage
 coverage/
 
