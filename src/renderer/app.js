@@ -661,6 +661,34 @@ class CraftForgeApp {
         await this.askAssistant(message);
       }
     });
+
+    // Video Chat AI
+    const videoChatStartBtn = document.getElementById('video-chat-start-btn');
+    const videoChatModal = document.getElementById('video-chat-modal');
+    const videoChatClose = document.getElementById('video-chat-close');
+    const endCallBtn = document.getElementById('end-call-btn');
+    const toggleCameraBtn = document.getElementById('toggle-camera-btn');
+    const toggleMicBtn = document.getElementById('toggle-mic-btn');
+
+    videoChatStartBtn?.addEventListener('click', () => {
+      this.startVideoChat();
+    });
+
+    videoChatClose?.addEventListener('click', () => {
+      this.endVideoChat();
+    });
+
+    endCallBtn?.addEventListener('click', () => {
+      this.endVideoChat();
+    });
+
+    toggleCameraBtn?.addEventListener('click', () => {
+      this.toggleCamera();
+    });
+
+    toggleMicBtn?.addEventListener('click', () => {
+      this.toggleMicrophone();
+    });
   }
 
   toggleToolPanel() {
@@ -2955,6 +2983,330 @@ class CraftForgeApp {
         require('electron').shell.openPath(path);
       });
     });
+  }
+
+  // Video Chat AI Methods
+  async startVideoChat() {
+    const modal = document.getElementById('video-chat-modal');
+    if (!modal) return;
+
+    // Show modal
+    modal.style.display = 'flex';
+
+    // Add system message
+    this.addVideoChatMessage('system', 'Connecting to AI assistant...');
+
+    // Initialize video chat state
+    this.videoChatActive = true;
+    this.cameraEnabled = false;
+    this.micEnabled = true;
+    this.speechRecognition = null;
+    this.speechSynthesis = window.speechSynthesis;
+
+    // Start user camera
+    await this.initializeUserCamera();
+
+    // Start AI avatar animation
+    this.initializeAIAvatar();
+
+    // Start speech recognition
+    this.startSpeechRecognition();
+
+    // Welcome message from AI
+    setTimeout(() => {
+      this.addVideoChatMessage('system', 'Connected!');
+      const welcomeMessage = "Hello! I'm your AI design assistant. I can help you with design questions, tool usage, and creative tips. What would you like to know?";
+      this.addVideoChatMessage('ai', welcomeMessage);
+      this.speakAIMessage(welcomeMessage);
+    }, 1000);
+  }
+
+  async initializeUserCamera() {
+    try {
+      const userVideo = document.getElementById('user-camera-video');
+      if (!userVideo) return;
+
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: true 
+      });
+      
+      userVideo.srcObject = stream;
+      this.userMediaStream = stream;
+      this.cameraEnabled = true;
+      
+      document.getElementById('toggle-camera-btn')?.classList.add('active');
+    } catch (error) {
+      console.error('Camera access denied:', error);
+      this.addVideoChatMessage('system', 'Camera access denied. You can still chat using voice.');
+      this.cameraEnabled = false;
+    }
+  }
+
+  initializeAIAvatar() {
+    const canvas = document.getElementById('ai-avatar-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = 640;
+    canvas.height = 480;
+
+    // Draw a simple animated AI avatar
+    this.animateAIAvatar(ctx, canvas);
+  }
+
+  animateAIAvatar(ctx, canvas) {
+    if (!this.videoChatActive) return;
+
+    const time = Date.now() / 1000;
+    
+    // Clear canvas
+    ctx.fillStyle = '#1a0505';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw AI avatar (simple face)
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Face circle
+    ctx.fillStyle = '#8b0000';
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 100, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#fff';
+    const eyeOffset = 30;
+    const eyeBlink = this.aiSpeaking ? Math.sin(time * 10) * 5 : 0;
+    
+    // Left eye
+    ctx.beginPath();
+    ctx.arc(centerX - eyeOffset, centerY - 20, 12 - eyeBlink, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Right eye
+    ctx.beginPath();
+    ctx.arc(centerX + eyeOffset, centerY - 20, 12 - eyeBlink, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Pupils
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(centerX - eyeOffset, centerY - 20, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(centerX + eyeOffset, centerY - 20, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Mouth (animated when speaking)
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    if (this.aiSpeaking) {
+      const mouthMove = Math.sin(time * 15) * 10;
+      ctx.arc(centerX, centerY + 30, 30, 0.2, Math.PI - 0.2);
+    } else {
+      ctx.arc(centerX, centerY + 20, 30, 0.2, Math.PI - 0.2);
+    }
+    ctx.stroke();
+
+    // Continue animation
+    requestAnimationFrame(() => this.animateAIAvatar(ctx, canvas));
+  }
+
+  startSpeechRecognition() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      console.warn('Speech recognition not supported');
+      this.addVideoChatMessage('system', 'Speech recognition not available. Type your messages instead.');
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    this.speechRecognition = new SpeechRecognition();
+    this.speechRecognition.continuous = true;
+    this.speechRecognition.interimResults = false;
+    this.speechRecognition.lang = 'en-US';
+
+    this.speechRecognition.onresult = (event) => {
+      const last = event.results.length - 1;
+      const text = event.results[last][0].transcript;
+      
+      this.addVideoChatMessage('user', text);
+      this.processUserMessage(text);
+    };
+
+    this.speechRecognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    this.speechRecognition.onend = () => {
+      if (this.videoChatActive && this.micEnabled) {
+        this.speechRecognition.start();
+      }
+    };
+
+    if (this.micEnabled) {
+      try {
+        this.speechRecognition.start();
+      } catch (error) {
+        console.error('Failed to start speech recognition:', error);
+      }
+    }
+  }
+
+  async processUserMessage(message) {
+    try {
+      // Get context about current state
+      const context = {
+        selectedObjects: this.selectedObjects.length,
+        currentTool: this.activeTool,
+        hasObjects: this.objects.length > 0
+      };
+
+      const response = await fetch('http://localhost:4000/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, context })
+      });
+
+      const data = await response.json();
+      const aiReply = data.reply || 'I apologize, I didn\'t understand that. Could you rephrase?';
+      
+      this.addVideoChatMessage('ai', aiReply);
+      this.speakAIMessage(aiReply);
+    } catch (error) {
+      console.error('Error processing message:', error);
+      const errorReply = 'I\'m having trouble connecting. Please check that the AI server is running.';
+      this.addVideoChatMessage('ai', errorReply);
+      this.speakAIMessage(errorReply);
+    }
+  }
+
+  speakAIMessage(message) {
+    if (!this.speechSynthesis) return;
+
+    // Cancel any ongoing speech
+    this.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(message);
+    utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+
+    // Show speaking indicator
+    const indicator = document.getElementById('ai-speaking-indicator');
+    
+    utterance.onstart = () => {
+      this.aiSpeaking = true;
+      if (indicator) indicator.style.display = 'flex';
+    };
+
+    utterance.onend = () => {
+      this.aiSpeaking = false;
+      if (indicator) indicator.style.display = 'none';
+    };
+
+    this.speechSynthesis.speak(utterance);
+  }
+
+  addVideoChatMessage(type, text) {
+    const messagesContainer = document.getElementById('video-chat-messages');
+    if (!messagesContainer) return;
+
+    const messageEl = document.createElement('div');
+    messageEl.className = `video-message ${type}`;
+    messageEl.textContent = text;
+    
+    messagesContainer.appendChild(messageEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  toggleCamera() {
+    const btn = document.getElementById('toggle-camera-btn');
+    const userVideo = document.getElementById('user-camera-video');
+    
+    if (!this.userMediaStream) return;
+
+    const videoTrack = this.userMediaStream.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled;
+      this.cameraEnabled = videoTrack.enabled;
+      
+      if (this.cameraEnabled) {
+        btn?.classList.add('active');
+        this.addVideoChatMessage('system', 'Camera enabled');
+      } else {
+        btn?.classList.remove('active');
+        this.addVideoChatMessage('system', 'Camera disabled');
+      }
+    }
+  }
+
+  toggleMicrophone() {
+    const btn = document.getElementById('toggle-mic-btn');
+    const micIndicator = document.getElementById('user-mic-indicator');
+    
+    this.micEnabled = !this.micEnabled;
+
+    if (this.micEnabled) {
+      btn?.classList.add('active');
+      micIndicator?.classList.remove('muted');
+      if (this.speechRecognition) {
+        try {
+          this.speechRecognition.start();
+        } catch (error) {
+          console.error('Failed to start speech recognition:', error);
+        }
+      }
+      this.addVideoChatMessage('system', 'Microphone enabled');
+    } else {
+      btn?.classList.remove('active');
+      micIndicator?.classList.add('muted');
+      if (this.speechRecognition) {
+        this.speechRecognition.stop();
+      }
+      this.addVideoChatMessage('system', 'Microphone muted');
+    }
+  }
+
+  endVideoChat() {
+    const modal = document.getElementById('video-chat-modal');
+    if (!modal) return;
+
+    // Stop all media streams
+    if (this.userMediaStream) {
+      this.userMediaStream.getTracks().forEach(track => track.stop());
+      this.userMediaStream = null;
+    }
+
+    // Stop speech recognition
+    if (this.speechRecognition) {
+      this.speechRecognition.stop();
+      this.speechRecognition = null;
+    }
+
+    // Stop speech synthesis
+    if (this.speechSynthesis) {
+      this.speechSynthesis.cancel();
+    }
+
+    // Clear video chat state
+    this.videoChatActive = false;
+    this.aiSpeaking = false;
+    this.cameraEnabled = false;
+    this.micEnabled = false;
+
+    // Clear messages
+    const messagesContainer = document.getElementById('video-chat-messages');
+    if (messagesContainer) {
+      messagesContainer.innerHTML = '';
+    }
+
+    // Hide modal
+    modal.style.display = 'none';
+
+    this.addVideoChatMessage('system', 'Video chat ended');
   }
 }
 

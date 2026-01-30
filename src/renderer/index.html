@@ -44,6 +44,50 @@
       </div>
     </div>
 
+    <!-- Video Chat Modal -->
+    <div id="video-chat-modal" class="video-chat-modal" style="display: none;">
+      <div class="video-chat-content">
+        <div class="video-chat-header">
+          <h2>🎥 AI Video Chat</h2>
+          <button id="video-chat-close" class="video-chat-close">✕</button>
+        </div>
+        <div class="video-chat-container">
+          <div class="video-panels">
+            <div class="video-panel ai-video">
+              <video id="ai-avatar-video" autoplay muted loop playsinline></video>
+              <canvas id="ai-avatar-canvas"></canvas>
+              <div class="video-label">AI Assistant</div>
+              <div id="ai-speaking-indicator" class="speaking-indicator" style="display: none;">
+                <span class="speaking-dot"></span> Speaking...
+              </div>
+            </div>
+            <div class="video-panel user-video">
+              <video id="user-camera-video" autoplay muted playsinline></video>
+              <div class="video-label">You</div>
+              <div id="user-mic-indicator" class="mic-indicator">
+                <span class="mic-icon">🎤</span>
+              </div>
+            </div>
+          </div>
+          <div class="video-chat-transcript">
+            <h3>Conversation</h3>
+            <div id="video-chat-messages" class="video-chat-messages"></div>
+          </div>
+        </div>
+        <div class="video-chat-controls">
+          <button id="toggle-camera-btn" class="control-btn" title="Toggle Camera">
+            <span>📹</span> Camera
+          </button>
+          <button id="toggle-mic-btn" class="control-btn active" title="Toggle Microphone">
+            <span>🎤</span> Microphone
+          </button>
+          <button id="end-call-btn" class="control-btn end-call" title="End Call">
+            <span>📞</span> End Call
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Left Toolbar (Scrollable) -->
     <aside id="toolbar">
       <div class="tool-group">
@@ -186,6 +230,17 @@
           <div class="tool-row">
             <button id="assistant-send-btn" class="tool-btn-panel" style="width: 100%">💬 Ask</button>
           </div>
+        </div>
+
+        <div class="tool-divider"></div>
+
+        <!-- Video Chat AI Section -->
+        <div class="panel-section">
+          <h4>🎥 AI Video Chat</h4>
+          <div class="tool-row">
+            <button id="video-chat-start-btn" class="tool-btn-panel" style="width: 100%">📹 Start Video Chat</button>
+          </div>
+          <p class="helper-text">Chat face-to-face with AI assistant</p>
         </div>
       </div>
     </div>
