@@ -1,40 +1,85 @@
-# Dependencies
+# ========== DEPENDENCIES ==========
 node_modules/
+package-lock.json
+yarn.lock
 
-# Build outputs
+# ========== BUILD & DISTRIBUTION ==========
 dist/
 build/
 out/
+*.exe
+*.dmg
+*.AppImage
+*.deb
+*.rpm
+*.snap
+*.asar
+*.tar.gz
+*.zip
 
-# IDE
+# ========== IDE & EDITOR ==========
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS files
+*.sublime-workspace
+*.sublime-project
 .DS_Store
 Thumbs.db
 
-# Logs
+# ========== LOGS & DEBUG ==========
 *.log
 npm-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# Environment
+# ========== ENVIRONMENT & SECRETS ==========
 .env
 .env.local
+.env.*.local
+.env.development
+.env.production
 
-# Sensitive data
+# ========== SENSITIVE DATA (ADMIN ONLY) ==========
 data/
-data/*.json
+data/**/*.json
 *.json.bak
+secrets/
+keys/
+tokens/
 
-# Admin (development only)
+# ========== ADMIN SYSTEM (LOCAL DEVELOPMENT ONLY) ==========
 src/admin/
+src/admin/**/*
 ADMIN_SETUP.md
+AdminServer.js
+LicenseManager.js
+MasterLicenseList.js
+admin.html
+dashboard.html
+master-license-list.html
+customer-portal.html
 
-# Test coverage
+# ========== LOCAL TESTING & CACHE ==========
 coverage/
+.nyc_output/
+.cache/
+.parcel-cache/
+dist-app/
+*.tsbuildinfo
 
-# Electron
-*.asar
+# ========== OS & SYSTEM ==========
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ========== TEMPORARY FILES ==========
+*.tmp
+*.temp
+*.bak
+*.orig
+*~
