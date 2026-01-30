@@ -3047,11 +3047,29 @@ class CraftForgeApp {
     const canvas = document.getElementById('ai-avatar-canvas');
     if (!canvas) return;
 
+    // Use realistic 3D avatar if available, fallback to 2D
+    try {
+      // Dynamically import the RealisticAvatar class
+      import('./realistic-avatar.js').then(module => {
+        const { RealisticAvatar } = module;
+        this.realisticAvatar = new RealisticAvatar(canvas);
+        console.log('Realistic 3D avatar initialized');
+      }).catch(err => {
+        console.warn('Could not load realistic avatar, using fallback:', err);
+        this.initializeFallbackAvatar(canvas);
+      });
+    } catch (error) {
+      console.warn('Realistic avatar not available, using fallback');
+      this.initializeFallbackAvatar(canvas);
+    }
+  }
+
+  initializeFallbackAvatar(canvas) {
     const ctx = canvas.getContext('2d');
     canvas.width = 640;
     canvas.height = 480;
 
-    // Draw a simple animated AI avatar
+    // Draw a simple animated AI avatar (fallback)
     this.animateAIAvatar(ctx, canvas);
   }
 
@@ -3200,11 +3218,21 @@ class CraftForgeApp {
     utterance.onstart = () => {
       this.aiSpeaking = true;
       if (indicator) indicator.style.display = 'flex';
+      
+      // Update realistic avatar if available
+      if (this.realisticAvatar) {
+        this.realisticAvatar.startSpeaking();
+      }
     };
 
     utterance.onend = () => {
       this.aiSpeaking = false;
       if (indicator) indicator.style.display = 'none';
+      
+      // Update realistic avatar if available
+      if (this.realisticAvatar) {
+        this.realisticAvatar.stopSpeaking();
+      }
     };
 
     this.speechSynthesis.speak(utterance);
@@ -3289,6 +3317,12 @@ class CraftForgeApp {
     // Stop speech synthesis
     if (this.speechSynthesis) {
       this.speechSynthesis.cancel();
+    }
+
+    // Destroy realistic avatar
+    if (this.realisticAvatar) {
+      this.realisticAvatar.destroy();
+      this.realisticAvatar = null;
     }
 
     // Clear video chat state
