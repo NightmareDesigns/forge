@@ -2,7 +2,7 @@
 
 ## Overview
 
-CraftForge is a desktop application built with Electron. Security is critical to protect user data and system integrity.
+Nightmare designs svg forge is a desktop application built with Electron. Security is critical to protect user data and system integrity.
 
 ## Security Features
 
