@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftForge - Professional Design & Cutting Software</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d0000 0%, #1a0000 100%);
+            color: #cccccc;
+            line-height: 1.6;
+        }
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #8b0000;
+            padding: 2rem;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 3rem;
+            color: #ff4444;
+            text-shadow: 0 0 10px #8b0000;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        .feature {
+            background: rgba(30, 30, 30, 0.7);
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+        .feature:hover {
+            transform: translateY(-5px);
+            border-color: #ff4444;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+        }
+        .feature h3 {
+            color: #ff4444;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+        .buttons {
+            text-align: center;
+            margin: 3rem 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            margin: 0.5rem;
+            background: #8b0000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .btn:hover {
+            background: #ff4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+        }
+        .btn.secondary {
+            background: transparent;
+            border: 2px solid #8b0000;
+        }
+        .btn.secondary:hover {
+            background: #8b0000;
+        }
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 2px solid #8b0000;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            color: #888;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        .stat {
+            padding: 1.5rem;
+            border: 1px solid #8b0000;
+            border-radius: 8px;
+        }
+        .stat h4 {
+            color: #ff4444;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎨 CraftForge</h1>
+        <p>Professional Design & Cutting Software for Creative Professionals</p>
+    </header>
+
+    <div class="container">
+        <div class="buttons">
+            <a href="#download" class="btn">Download Now</a>
+            <a href="#features" class="btn secondary">Learn More</a>
+        </div>
+
+        <section id="features" class="features">
+            <div class="feature">
+                <h3>🖌️ Advanced Design Tools</h3>
+                <p>Professional-grade design tools with 20+ specialized features for creating stunning artwork and layouts.</p>
+            </div>
+            <div class="feature">
+                <h3>✂️ Precision Cutting</h3>
+                <p>Support for multiple cutting machines including Cricut and HP DesignJet with precise alignment controls.</p>
+            </div>
+            <div class="feature">
+                <h3>📐 Vector Graphics</h3>
+                <p>Full SVG support with advanced vectorization tools for converting images to scalable graphics.</p>
+            </div>
+            <div class="feature">
+                <h3>🎭 Shape Library</h3>
+                <p>Thousands of pre-made shapes, patterns, and design elements at your fingertips.</p>
+            </div>
+            <div class="feature">
+                <h3>✏️ Text Tools</h3>
+                <p>Create and manipulate text with advanced typography controls and special effects.</p>
+            </div>
+            <div class="feature">
+                <h3>🔄 Pattern Tools</h3>
+                <p>Generate complex patterns with customizable parameters for unique designs.</p>
+            </div>
+        </section>
+
+        <div class="stats">
+            <div class="stat">
+                <h4>20+</h4>
+                <p>Professional Tools</p>
+            </div>
+            <div class="stat">
+                <h4>1000+</h4>
+                <p>Design Elements</p>
+            </div>
+            <div class="stat">
+                <h4>4</h4>
+                <p>Device Support</p>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="#download" class="btn" id="download">Download CraftForge</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Nightmare Designs. All rights reserved.</p>
+        <p><a href="https://github.com/NightmareDesigns/forge" style="color: #8b0000; text-decoration: none;">View on GitHub</a></p>
+    </footer>
+</body>
+</html>
