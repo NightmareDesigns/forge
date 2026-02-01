@@ -664,7 +664,7 @@ class CraftForgeApp {
 
     // Video Chat AI
     const videoChatStartBtn = document.getElementById('video-chat-start-btn');
-    const videoChatModal = document.getElementById('video-chat-modal');
+
     const videoChatClose = document.getElementById('video-chat-close');
     const endCallBtn = document.getElementById('end-call-btn');
     const toggleCameraBtn = document.getElementById('toggle-camera-btn');
@@ -3237,13 +3237,38 @@ class CraftForgeApp {
     this.speechSynthesis.speak(utterance);
   }
 
+  /**
+   * Sanitize text shown in the video chat UI to avoid control characters
+   * and excessively long content from disrupting the interface.
+   * @param {any} text
+   * @param {number} [maxLength=4000]
+   * @returns {string}
+   */
+  sanitizeChatText(text, maxLength = 4000) {
+    // Coerce to string and provide a safe fallback
+    let safeText = (text === null || text === undefined) ? '' : String(text);
+
+    // Remove non-printable control characters except common whitespace
+    // Allows tabs (\x09), newlines (\x0A), carriage returns (\x0D),
+    // and printable ASCII characters (\x20-\x7E).
+    safeText = safeText.replace(/[^\x09\x0A\x0D\x20-\x7E]/g, '');
+
+    // Enforce a maximum length to prevent UI/performance issues
+    if (safeText.length > maxLength) {
+      safeText = safeText.slice(0, maxLength) + '… [truncated]';
+    }
+
+    return safeText;
+  }
+
   addVideoChatMessage(type, text) {
     const messagesContainer = document.getElementById('video-chat-messages');
     if (!messagesContainer) return;
 
     const messageEl = document.createElement('div');
     messageEl.className = `video-message ${type}`;
-    messageEl.textContent = text;
+    const safeText = this.sanitizeChatText(text);
+    messageEl.textContent = safeText;
     
     messagesContainer.appendChild(messageEl);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -3282,7 +3307,18 @@ class CraftForgeApp {
         try {
           this.speechRecognition.start();
         } catch (error) {
-          console.error('Failed to start speech recognition:', error);
+          // Calling start() while recognition is already running throws an InvalidStateError.
+          // Treat that specific case as a benign race condition.
+          const message = typeof error?.message === 'string' ? error.message.toLowerCase() : '';
+          const isAlreadyStartedError =
+            error?.name === 'InvalidStateError' ||
+            message.includes('start') && message.includes('already');
+
+          if (isAlreadyStartedError) {
+            console.warn('Speech recognition was already running when start() was called.');
+          } else {
+            console.error('Failed to start speech recognition:', error);
+          }
         }
       }
       this.addVideoChatMessage('system', 'Microphone enabled');
